@@ -1,3 +1,4 @@
+/* eslint-disable */
 <template>
   <div class="login-container">
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
@@ -54,6 +55,8 @@
 
 <script>
 import { validUsername } from '@/utils/validate'
+import qs from 'qs'
+import {LocalStorage} from '@/utils/storage'
 
 export default {
   name: 'Login',
@@ -75,11 +78,11 @@ export default {
     return {
       loginForm: {
         username: 'admin',
-        password: '111111'
+        password: 'admin'
       },
       loginRules: {
-        username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePassword }]
+        // username: [{ required: true, trigger: 'blur', validator: validateUsername }],
+        // password: [{ required: true, trigger: 'blur', validator: validatePassword }]
       },
       loading: false,
       passwordType: 'password',
@@ -109,12 +112,33 @@ export default {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-          this.$store.dispatch('user/login', this.loginForm).then(() => {
-            this.$router.push({ path: this.redirect || '/' })
+          // this.$store.dispatch('user/login', this.loginForm).then(() => {
+          //   this.$router.push({ path: this.redirect || '/' })
+          //   this.loading = false
+          // }).catch(() => {
+          //   this.loading = false
+          // })
+
+          let data={
+            account:this.loginForm.username,
+            login_password:this.loginForm.password
+          }
+          this.$http.post(`${this.url}/login`,qs.stringify(data)).then( resp => {
             this.loading = false
-          }).catch(() => {
-            this.loading = false
+            if( resp.code === 200 ) {
+              let date = new Date().getTime();
+              LocalStorage.set("token", resp.data, date + 20*60*1000);
+              this.$router.push({ path: this.redirect || '/' })
+            } else {
+              this.$message({
+                message:resp.msg,
+                type:'error',
+                center:true
+              })
+            }
+
           })
+
         } else {
           console.log('error submit!!')
           return false
