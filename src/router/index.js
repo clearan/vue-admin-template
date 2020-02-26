@@ -43,46 +43,6 @@ export const constantRoutes = [
         component: () => import('@/views/auth/list'),
         meta: { title: '权限管理'}
       },
-      {
-        hidden:true,
-        path: '/auth/add',
-        name: 'Add',
-        component: () => import('@/views/auth/add'),
-        meta: { title: '添加权限'}
-      },
-      {
-        path: '/role/list',
-        name: 'List',
-        component: () => import('@/views/role/list'),
-        meta: { title: '角色管理'}
-      },
-      {
-        hidden:true,
-        path: '/role/add',
-        name: 'Add',
-        component: () => import('@/views/role/add'),
-        meta: { title: '添加角色'}
-      },
-      {
-        hidden: true,
-        path: '/role/edit',
-        name: 'Edit',
-        component: () => import('@/views/role/edit'),
-        meta: { title: '编辑角色'}
-      },
-      {
-        path: '/user/list',
-        name: 'List',
-        component: () => import('@/views/user/list'),
-        meta: { title: '用户列表'}
-      },
-      {
-        hidden: true,
-        path: '/user/detail',
-        name: 'Detail',
-        component: () => import('@/views/user/detail'),
-        meta: { title: '用户详情'}
-      }
     ]
   },
 
