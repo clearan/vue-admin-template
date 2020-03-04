@@ -1,68 +1,32 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-
-Vue.use(Router)
-
-/* Layout */
 import Layout from '@/layout'
-
-export const constantRoutes = [
+Vue.use(Router)
+var constantRouterMap=[
   {
-    path: '/login',
-    component: () => import('@/views/login/index'),
-    hidden: true
-  },
-
+  path: '/login',
+  component: () => import('@/views/login/index'),
+  hidden: true
+},
+//   {
+//   path: '/',
+//   component: Layout,
+//   redirect: '/dashboard',
+//   children: [{
+//     path: 'dashboard',
+//     name: 'Dashboard',
+//     component: () => import('@/views/dashboard/index'),
+//     meta: { title: 'Dashboard', icon: 'dashboard' }
+//   }]
+// },
   {
     path: '/404',
-    component: () => import('@/views/404'),
+    component: () => import('@/views/error-page/404'),
     hidden: true
   },
-
-  {
-    path: '/',
-    component: Layout,
-    redirect: '/dashboard',
-    children: [{
-      path: 'dashboard',
-      name: 'Dashboard',
-      component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Dashboard', icon: 'dashboard' }
-    }]
-  },
-
-  {
-    path: '/auth',
-    component: 'Layout',
-    redirect:'/auth/list',
-    meta: { title: '系统管理'},
-    children: [
-      {
-        path: '/auth/list',
-        name: 'List',
-        component: () => import('@/views/auth/list'),
-        meta: { title: '权限管理'}
-      },
-    ]
-  },
-
-
-  // 404 page must be placed at the end !!!
-  { path: '*', redirect: '/404', hidden: true }
 ]
+//目前有的两个路由一个不能少
+export default new Router({
+  routes: constantRouterMap
 
-const createRouter = () => new Router({
-  // mode: 'history', // require service support
-  scrollBehavior: () => ({ y: 0 }),
-  routes: constantRoutes
 })
-
-const router = createRouter()
-
-// Detail see: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
-export function resetRouter() {
-  const newRouter = createRouter()
-  router.matcher = newRouter.matcher // reset router
-}
-
-export default router

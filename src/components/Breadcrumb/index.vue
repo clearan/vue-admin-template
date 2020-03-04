@@ -32,9 +32,9 @@ export default {
       let matched = this.$route.matched.filter(item => item.meta && item.meta.title)
       const first = matched[0]
 
-      if (!this.isDashboard(first)) {
-        matched = [{ path: '/dashboard', meta: { title: 'Dashboard' }}].concat(matched)
-      }
+      // if (!this.isDashboard(first)) {
+      //   matched = [{ path: '/dashboard', meta: { title: 'Dashboard' }}].concat(matched)
+      // }//去掉首页
 
       this.levelList = matched.filter(item => item.meta && item.meta.title && item.meta.breadcrumb !== false)
     },

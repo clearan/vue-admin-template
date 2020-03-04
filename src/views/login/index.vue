@@ -86,18 +86,31 @@ export default {
       },
       loading: false,
       passwordType: 'password',
-      redirect: undefined
+      redirect: undefined,
+      otherQuery: {}
     }
   },
   watch: {
     $route: {
       handler: function(route) {
-        this.redirect = route.query && route.query.redirect
+        const query = route.query
+        if (query) {
+          this.redirect = query.redirect
+          this.otherQuery = this.getOtherQuery(query)
+        }
       },
       immediate: true
     }
   },
   methods: {
+    getOtherQuery(query) {
+      return Object.keys(query).reduce((acc, cur) => {
+        if (cur !== 'redirect') {
+          acc[cur] = query[cur]
+        }
+        return acc
+      }, {})
+    },
     showPwd() {
       if (this.passwordType === 'password') {
         this.passwordType = ''
@@ -109,26 +122,32 @@ export default {
       })
     },
     handleLogin() {
+      // let date = new Date().getTime();
+      // LocalStorage.set("token", '111', date + 20*60*1000);
+      // this.$router.push({ path: this.redirect || '/' })
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-          // this.$store.dispatch('user/login', this.loginForm).then(() => {
-          //   this.$router.push({ path: this.redirect || '/' })
-          //   this.loading = false
-          // }).catch(() => {
-          //   this.loading = false
-          // })
-
           let data={
             account:this.loginForm.username,
             login_password:this.loginForm.password
           }
           this.$http.post(`${this.url}/login`,qs.stringify(data)).then( resp => {
             this.loading = false
+
             if( resp.code === 200 ) {
               let date = new Date().getTime();
-              LocalStorage.set("token", resp.data, date + 20*60*1000);
-              this.$router.push({ path: this.redirect || '/' })
+              LocalStorage.set("token", resp.data.token, date + 60*60*1000);
+              LocalStorage.set("base", resp.data.base, date + 60*60*1000);
+              //console.log(LocalStorage.get('token'))
+              if (resp.data.permission) {
+                //console.log(resp);return
+                this.getTree(resp.data.permission,date)
+                this.$router.push({ path: this.redirect || '/' ,query: this.otherQuery})
+              } else {
+                //管理员
+                this.getAllAuths(date);
+              }
             } else {
               this.$message({
                 message:resp.msg,
@@ -137,6 +156,9 @@ export default {
               })
             }
 
+          }).catch( err => {
+            this.loading = false
+            console.log(err)
           })
 
         } else {
@@ -144,7 +166,46 @@ export default {
           return false
         }
       })
+    },
+    getTree(data,date) {
+      let cloneData = JSON.parse(JSON.stringify(data))
+      let treeData =  cloneData.filter(father=>{
+        let branchArr = cloneData.filter(child=>father.id === child.parent_id && child.type === 2)    //返回每一项的子级数组
+        branchArr.length>0 ? father.auth2_list = branchArr : ''   //如果存在子级，则给父级添加一个auth2_list属性，并赋值
+        return father.parent_id === 1 && father.status === 1 && father.type === 1;      //返回第一层
+      });
+      let bp = []
+      cloneData.forEach( item => {
+        if (item.type === 3) {
+          bp.push(item.permission_path)
+        }
+      })
+      LocalStorage.set('permission',treeData,date + 60*60*1000)
+      LocalStorage.set('bp',bp,date + 60*60*1000)
+    },
+
+    getAllAuths(date) {
+      //将结果显示在左侧菜单页。
+      //一级菜单：type=1 && status=1
+      //二级菜单：type=2 && status=1
+      let data = {
+        parent_id:1,
+        request_param:'GET'
+      }
+      this.$http.get(`${this.url}/admin_permission`,data).then( resp =>{
+        //console.log(resp)
+        if (resp.code === 200) {
+          if (resp.data) {
+            this.getTree(resp.data,date)
+            this.$router.push({ path: this.redirect || '/' ,query: this.otherQuery})
+            //其实到了处理一般角色的时候 也是存权限到storage
+          }
+        }else{
+          alert('获取信息失败')
+        }
+      })
     }
+
   }
 }
 </script>
