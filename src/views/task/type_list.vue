@@ -174,7 +174,6 @@
   import {formatMoney} from '@/utils/money'
   import qs from 'qs'
   import Timeselect from '@/components/Timeselect'
-
   export default {
     components: { Pagination,Timeselect},
     data() {
@@ -229,37 +228,30 @@
         dialogVisibleEdit: false,
       }
     },
-
     filters:{
       //时间戳
       formatDate(time) {
         return formatDate(time);
       },
-
       //金额千分化
       formatMoney(money) {
         return formatMoney(money)
       }
     },
-
     methods:{
-
       get_time_result(obj) {
         this.listQuery.value1 = obj.value1
         this.listQuery.value2 = obj.value2
         this.handleFilter()
       },
-
       get_time(obj) {
         this.listQuery.value1 = obj.value1
         this.listQuery.value2 = obj.value2
       },
-
       handleFilter() {
         this.listQuery.page = 0;
         this.getList()
       },
-
       addType() {
         this.dialogVisibleAdd = true
         this.$nextTick(()=>{
@@ -270,7 +262,6 @@
         this.add.sort = ''
         this.add.status = '1'
       },
-
       submitAdd() {
         let data = {
           title:this.add.title,
@@ -279,7 +270,6 @@
           status:parseInt(this.add.status),
           request_param:'POST'
         }
-
         this.$refs.add.validate(valid => {
           if (valid) {
             this.$http.post(`${this.url}/task`,qs.stringify(data)).then( resp => {
@@ -292,7 +282,6 @@
                 setTimeout(() => {
                   window.location.reload()
                 },1000)
-
               } else {
                 this.msgTip(resp.msg)
               }
@@ -302,23 +291,18 @@
           }
         })
       },
-
       checkTime() {
-
         if(this.listQuery.value1 && this.listQuery.value2 && this.listQuery.value1 > this.listQuery.value2) {
           this.msgTip('开始日期不能大于结束日期')
           return false
         }
         return true
       },
-
       getList(obj) {
         if(this.checkTime()) {
-
           if (obj!==undefined && obj.flag !== undefined) {
             this.listQuery.page =1
           }
-
           let data = {
             status : this.listQuery.status!==''?this.listQuery.status:undefined,
             page: this.listQuery.page,
@@ -327,7 +311,6 @@
             end_time:this.listQuery.value2?parseInt(this.listQuery.value2/1000+24*60*60-1):undefined,
             request_param:'GET'
           }
-
           this.search_loading = true;
           this.$http.get(`${this.url}/task`,data).then((resp)=>{
             this.search_loading = false;
@@ -355,7 +338,6 @@
           })
         }
       },
-
       user_edit(row) {
         this.edit.id = row.id;
         this.edit.title = row.title;
@@ -367,7 +349,6 @@
           this.$refs.edit.resetFields();//等弹窗里的form表单的dom渲染完在执行this.$refs.edit.resetFields()，去除验证
         });
       },
-
       submitEdit() {
         let data = {
           id:this.edit.id,
@@ -377,7 +358,6 @@
           status:parseInt(this.edit.status),
           request_param:'PUT'
         }
-
         this.$refs.edit.validate(valid => {
           if (valid) {
             this.$http.put(`${this.url}/task`,qs.stringify(data)).then( resp => {
@@ -390,7 +370,6 @@
                 setTimeout(() => {
                   window.location.reload()
                 },1000)
-
               } else {
                 this.msgTip(resp.msg)
               }
@@ -400,7 +379,6 @@
           }
         })
       },
-
       msgTip(name) {
         this.$message({
           message:name,
@@ -409,7 +387,6 @@
         })
       },
     },
-
     created() {
       if(this.$route.params.mem_id) {
         this.listQuery.id = this.$route.params.mem_id
@@ -417,8 +394,4 @@
       this.getList()
     }
   }
-
 </script>
-
-
-

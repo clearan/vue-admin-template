@@ -171,7 +171,6 @@
   import {formatMoney} from '@/utils/money'
   import qs from 'qs'
   import Timeselect from '@/components/Timeselect'
-
   export default {
     components: { Pagination,Timeselect},
     data() {
@@ -214,60 +213,47 @@
         dialogVisibleEdit: false,
       }
     },
-
     filters:{
       //时间戳
       formatDate(time) {
         return formatDate(time);
       },
-
       //金额千分化
       formatMoney(money) {
         return formatMoney(money)
       }
     },
-
     methods:{
-
       get_time_result(obj) {
         this.listQuery.value1 = obj.value1
         this.listQuery.value2 = obj.value2
         this.handleFilter()
       },
-
       get_time(obj) {
         this.listQuery.value1 = obj.value1
         this.listQuery.value2 = obj.value2
       },
-
       handleFilter() {
         this.listQuery.page = 1;
         this.getList()
       },
-
       showDetail(row) {
         let date = new Date().getTime();
         LocalStorage.set("phone", row.Phone, date + 3*60*60*1000);
         this.$router.push({path: '/member/dynamic_detail', query: {id: row.Id}})
       },
-
-
       checkTime() {
-
         if(this.listQuery.value1 && this.listQuery.value2 && this.listQuery.value1 > this.listQuery.value2) {
           this.msgTip('开始日期不能大于结束日期')
           return false
         }
         return true
       },
-
       getList(obj) {
         if(this.checkTime()) {
-
           if (obj!==undefined && obj.flag !== undefined) {
             this.listQuery.page =1
           }
-
           let data = {
             status : this.listQuery.status!==''?this.listQuery.status:undefined,
             page: this.listQuery.page,
@@ -279,10 +265,8 @@
             admin_account: this.listQuery.admin_account,
             request_param:'GET'
           }
-
           this.search_loading = true;
           this.$http.get(`${this.url}/user_bank`,data).then((resp)=>{
-
             this.search_loading = false;
             if (resp.code === 200) {
               if (resp.data) {
@@ -308,7 +292,6 @@
           })
         }
       },
-
       user_edit(row) {
         console.log(row)
         this.edit.id = row.id;
@@ -320,11 +303,8 @@
           this.$refs.edit.resetFields();//等弹窗里的form表单的dom渲染完在执行this.$refs.edit.resetFields()，去除验证
         });
       },
-
       submitEdit() {
-
       },
-
       msgTip(name) {
         this.$message({
           message:name,
@@ -333,7 +313,6 @@
         })
       },
     },
-
     created() {
       if(this.$route.params.mem_id) {
         this.listQuery.id = this.$route.params.mem_id
@@ -341,8 +320,4 @@
       this.getList()
     }
   }
-
 </script>
-
-
-

@@ -199,187 +199,162 @@
 </template>
 
 <script>
-    import Pagination from '@/components/Pagination'
-    import {LocalStorage} from '@/utils/storage'
-    import {formatDate} from '@/utils/date'
-    import {formatMoney} from '@/utils/money'
-    import qs from 'qs'
-    import Timeselect from '@/components/Timeselect'
-
-    export default {
-        components: { Pagination,Timeselect},
-        data() {
-            var validateName = (rule, value, callback) => {
-              if (!value) {
-                callback(new Error('名称不能为空'));
-              } else if (value.includes(';') || value.includes('|')) {
-                callback(new Error('名称不能有特殊字符'));
-              } else {
-                callback();
-              }
-            };
-            return {
-                button:['','','','','','',''],
-                search_loading:false,
-                member_list:[],
-                listQuery: {
-                    value1:'',
-                    value2:'',
-                    page: 1,
-                    limit: 10,
-                    username: undefined,
-                    phone: undefined,
-                    admin_account: undefined,
-                    status:undefined
-                },
-                states : [
-                  {status:1,name:'提现中'},
-                  {status:2,name:'审核中'},
-                  {status:3,name:'成功'},
-                  {status:4,name:'拒绝'},
-                ],
-                edit:{
-                  real_name:'',
-                  nick_name:'',
-                  status:''
-                },
-                editRules: {
-                  real_name: [{ required: true, trigger: 'blur', validator: validateName}],
-                  nick_name: [{ required: true, trigger: 'blur', validator: validateName}],
-                },
-                total:0,
-                dialogVisibleEdit: false,
-            }
-        },
-
-        filters:{
-            //时间戳
-            formatDate(time) {
-                return formatDate(time);
-            },
-
-            //金额千分化
-            formatMoney(money) {
-                return formatMoney(money)
-            }
-        },
-
-        methods:{
-
-            get_time_result(obj) {
-                this.listQuery.value1 = obj.value1
-                this.listQuery.value2 = obj.value2
-                this.handleFilter()
-            },
-
-            get_time(obj) {
-                this.listQuery.value1 = obj.value1
-                this.listQuery.value2 = obj.value2
-            },
-
-            handleFilter() {
-                this.listQuery.page = 1;
-                this.getList()
-            },
-
-            showDetail(row) {
-                let date = new Date().getTime();
-                LocalStorage.set("phone", row.Phone, date + 3*60*60*1000);
-                this.$router.push({path: '/member/dynamic_detail', query: {id: row.Id}})
-            },
-
-
-            checkTime() {
-
-                if(this.listQuery.value1 && this.listQuery.value2 && this.listQuery.value1 > this.listQuery.value2) {
-                    this.msgTip('开始日期不能大于结束日期')
-                    return false
-                }
-                return true
-            },
-
-            getList(obj) {
-                if(this.checkTime()) {
-
-                    if (obj!==undefined && obj.flag !== undefined) {
-                        this.listQuery.page =1
-                    }
-
-                    let data = {
-                      status : this.listQuery.status!==''?this.listQuery.status:undefined,
-                      page: this.listQuery.page,
-                      page_size: this.listQuery.limit,
-                      start_time:this.listQuery.value1?parseInt(this.listQuery.value1/1000):undefined,
-                      end_time:this.listQuery.value2?parseInt(this.listQuery.value2/1000+24*60*60-1):undefined,
-                      username: this.listQuery.username,
-                      phone: this.listQuery.phone,
-                      admin_account: this.listQuery.admin_account,
-                      request_param:'GET'
-                    }
-
-                    this.search_loading = true;
-                    this.$http.get(`${this.url}/user_deposit`,data).then((resp)=>{
-
-                        this.search_loading = false;
-                        if (resp.code === 200) {
-                            if (resp.data) {
-                                this.member_list = resp.data;
-                                this.total = resp.page.TotalSize
-                            }else {
-                                this.member_list = [];
-                                this.total = 0
-                            }
-                        }else{
-                            this.$message({
-                                message:resp.msg,
-                                type:'error',
-                                center:true
-                            })
-                        }
-                    }).catch((error)=>{
-                        this.search_loading = false;
-                        if (error !== 'loginErr') {
-                            console.log(error);
-                            this.msgTip('系统繁忙，请稍后重试')
-                        }
-                    })
-                }
-            },
-
-            user_edit(row) {
-              console.log(row)
-              this.edit.id = row.id;
-              this.edit.real_name = row.real_name;
-              this.edit.nick_name = row.nick_name;
-              this.edit.status = row.status;
-              this.dialogVisibleEdit = true
-              this.$nextTick(()=>{
-                this.$refs.edit.resetFields();//等弹窗里的form表单的dom渲染完在执行this.$refs.edit.resetFields()，去除验证
-              });
-            },
-
-            submitEdit() {
-
-            },
-
-            msgTip(name) {
-                this.$message({
-                    message:name,
-                    type:'error',
-                    center:true
-                })
-            },
-        },
-
-        created() {
-            if(this.$route.params.mem_id) {
-                this.listQuery.id = this.$route.params.mem_id
-            }
-            this.getList()
+  import Pagination from '@/components/Pagination'
+  import {LocalStorage} from '@/utils/storage'
+  import {formatDate} from '@/utils/date'
+  import {formatMoney} from '@/utils/money'
+  import qs from 'qs'
+  import Timeselect from '@/components/Timeselect'
+  export default {
+    components: { Pagination,Timeselect},
+    data() {
+      var validateName = (rule, value, callback) => {
+        if (!value) {
+          callback(new Error('名称不能为空'));
+        } else if (value.includes(';') || value.includes('|')) {
+          callback(new Error('名称不能有特殊字符'));
+        } else {
+          callback();
         }
+      };
+      return {
+        button:['','','','','','',''],
+        search_loading:false,
+        member_list:[],
+        listQuery: {
+          value1:'',
+          value2:'',
+          page: 1,
+          limit: 10,
+          username: undefined,
+          phone: undefined,
+          admin_account: undefined,
+          status:undefined
+        },
+        states : [
+          {status:1,name:'提现中'},
+          {status:2,name:'审核中'},
+          {status:3,name:'成功'},
+          {status:4,name:'拒绝'},
+        ],
+        edit:{
+          real_name:'',
+          nick_name:'',
+          status:''
+        },
+        editRules: {
+          real_name: [{ required: true, trigger: 'blur', validator: validateName}],
+          nick_name: [{ required: true, trigger: 'blur', validator: validateName}],
+        },
+        total:0,
+        dialogVisibleEdit: false,
+      }
+    },
+    filters:{
+      //时间戳
+      formatDate(time) {
+        return formatDate(time);
+      },
+      //金额千分化
+      formatMoney(money) {
+        return formatMoney(money)
+      }
+    },
+    methods:{
+      get_time_result(obj) {
+        this.listQuery.value1 = obj.value1
+        this.listQuery.value2 = obj.value2
+        this.handleFilter()
+      },
+      get_time(obj) {
+        this.listQuery.value1 = obj.value1
+        this.listQuery.value2 = obj.value2
+      },
+      handleFilter() {
+        this.listQuery.page = 1;
+        this.getList()
+      },
+      showDetail(row) {
+        let date = new Date().getTime();
+        LocalStorage.set("phone", row.Phone, date + 3*60*60*1000);
+        this.$router.push({path: '/member/dynamic_detail', query: {id: row.Id}})
+      },
+      checkTime() {
+        if(this.listQuery.value1 && this.listQuery.value2 && this.listQuery.value1 > this.listQuery.value2) {
+          this.msgTip('开始日期不能大于结束日期')
+          return false
+        }
+        return true
+      },
+      getList(obj) {
+        if(this.checkTime()) {
+          if (obj!==undefined && obj.flag !== undefined) {
+            this.listQuery.page =1
+          }
+          let data = {
+            status : this.listQuery.status!==''?this.listQuery.status:undefined,
+            page: this.listQuery.page,
+            page_size: this.listQuery.limit,
+            start_time:this.listQuery.value1?parseInt(this.listQuery.value1/1000):undefined,
+            end_time:this.listQuery.value2?parseInt(this.listQuery.value2/1000+24*60*60-1):undefined,
+            username: this.listQuery.username,
+            phone: this.listQuery.phone,
+            admin_account: this.listQuery.admin_account,
+            request_param:'GET'
+          }
+          this.search_loading = true;
+          this.$http.get(`${this.url}/user_deposit`,data).then((resp)=>{
+            this.search_loading = false;
+            if (resp.code === 200) {
+              if (resp.data) {
+                this.member_list = resp.data;
+                this.total = resp.page.TotalSize
+              }else {
+                this.member_list = [];
+                this.total = 0
+              }
+            }else{
+              this.$message({
+                message:resp.msg,
+                type:'error',
+                center:true
+              })
+            }
+          }).catch((error)=>{
+            this.search_loading = false;
+            if (error !== 'loginErr') {
+              console.log(error);
+              this.msgTip('系统繁忙，请稍后重试')
+            }
+          })
+        }
+      },
+      user_edit(row) {
+        console.log(row)
+        this.edit.id = row.id;
+        this.edit.real_name = row.real_name;
+        this.edit.nick_name = row.nick_name;
+        this.edit.status = row.status;
+        this.dialogVisibleEdit = true
+        this.$nextTick(()=>{
+          this.$refs.edit.resetFields();//等弹窗里的form表单的dom渲染完在执行this.$refs.edit.resetFields()，去除验证
+        });
+      },
+      submitEdit() {
+      },
+      msgTip(name) {
+        this.$message({
+          message:name,
+          type:'error',
+          center:true
+        })
+      },
+    },
+    created() {
+      if(this.$route.params.mem_id) {
+        this.listQuery.id = this.$route.params.mem_id
+      }
+      this.getList()
     }
-
+  }
 </script>
-
-
-
