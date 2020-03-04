@@ -138,7 +138,7 @@ export default {
             if( resp.code === 200 ) {
               let date = new Date().getTime();
               LocalStorage.set("token", resp.data.token, date + 60*60*1000);
-              LocalStorage.set("base", resp.data.base, date + 60*60*1000);
+              LocalStorage.set("base", resp.data.base, date+10000*60*60*1000)
               //console.log(LocalStorage.get('token'))
               if (resp.data.permission) {
                 //console.log(resp);return
@@ -180,8 +180,8 @@ export default {
           bp.push(item.permission_path)
         }
       })
-      LocalStorage.set('permission',treeData,date + 60*60*1000)
-      LocalStorage.set('bp',bp,date + 60*60*1000)
+      LocalStorage.set('permission',treeData,date + 10000*60*60*1000)
+      LocalStorage.set('bp',bp,date + 10000*60*60*1000)
     },
 
     getAllAuths(date) {

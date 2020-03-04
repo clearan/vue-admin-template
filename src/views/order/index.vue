@@ -14,9 +14,13 @@
         <timeselect @getTimeResult="get_time_result" @getTime="get_time"/>
 
         <div style="margin-top:10px">
+          <el-input v-model="listQuery.username" clearable placeholder="username" style="width: 150px;" class="filter-item" @keyup.enter.native="handleFilter" />
 
-          <el-select v-model="listQuery.status" placeholder="状态" clearable style="width: 90px;" class="filter-item">
-            <el-option v-for="item in states" :key="item.status" :label="item.name" :value="item.status" />
+          <el-select v-model="listQuery.type" placeholder="账变形式" clearable style="width: 110px;margin-left: 20px" class="filter-item">
+            <el-option v-for="item in types" :key="item.type" :label="item.name" :value="item.type" />
+          </el-select>
+          <el-select v-model="listQuery.operate" placeholder="账变类型" clearable style="width: 130px;margin-left: 20px" class="filter-item">
+            <el-option v-for="item in operates" :key="item.operate" :label="item.name" :value="item.operate" />
           </el-select>
 
           <el-button  class="filter-item" type="primary" style="margin-left: 20px;" icon="el-icon-search" @click="handleFilter" :loading="search_loading">
@@ -34,6 +38,7 @@
       >
 
         <el-table-column
+          min-width="12%"
           align="center"
           prop="id"
           label="id"
@@ -44,29 +49,22 @@
         </el-table-column>
 
         <el-table-column
+          min-width="12%"
           align="center"
           prop="user_id"
-          label="用户ID"
+          label="user_id"
         >
           <template slot-scope="{row}">
             {{ row.user_id }}
           </template>
+
         </el-table-column>
 
         <el-table-column
-          align="center"
-          prop="username"
-          label="用户名"
-        >
-          <template slot-scope="{row}">
-            {{row.username}}
-          </template>
-        </el-table-column>
-
-        <el-table-column
+          min-width="10%"
           align="center"
           prop="project"
-          label="项目名称"
+          label="project"
         >
           <template slot-scope="{row}">
             {{row.project}}
@@ -74,9 +72,10 @@
         </el-table-column>
 
         <el-table-column
+          min-width="10%"
           align="center"
           prop="task_type"
-          label="任务类型ID"
+          label="task_type"
         >
           <template slot-scope="{row}">
             {{row.task_type}}
@@ -84,90 +83,10 @@
         </el-table-column>
 
         <el-table-column
-          align="center"
-          prop="title"
-          label="任务标题"
-        >
-          <template slot-scope="{row}">
-            {{row.title}}
-          </template>
-        </el-table-column>
-
-        <el-table-column
-          align="center"
-          prop="title"
-          label="任务描述"
-        >
-          <template slot-scope="{row}">
-            {{row.title}}
-          </template>
-        </el-table-column>
-
-        <el-table-column
-          align="center"
-          prop="title"
-          label="任务链接"
-        >
-          <template slot-scope="{row}">
-            {{row.link}}
-          </template>
-        </el-table-column>
-
-
-        <el-table-column
-          align="center"
-          prop="amount"
-          label="任务金额"
-        >
-          <template slot-scope="{row}">
-            {{row.amount}}
-          </template>
-        </el-table-column>
-
-        <el-table-column
-          align="center"
-          prop="amount"
-          label="任务数量"
-        >
-          <template slot-scope="{row}">
-            {{row.count}}
-          </template>
-        </el-table-column>
-
-        <el-table-column
-          align="center"
-          prop="accept"
-          label="做单人数"
-        >
-          <template slot-scope="{row}">
-            {{row.accept}}
-          </template>
-        </el-table-column>
-
-        <el-table-column
-          align="center"
-          prop="commit"
-          label="待审核人数"
-        >
-          <template slot-scope="{row}">
-            {{row.commit}}
-          </template>
-        </el-table-column>
-
-        <el-table-column
-          align="center"
-          prop="success"
-          label="已通过人数"
-        >
-          <template slot-scope="{row}">
-            {{row.success}}
-          </template>
-        </el-table-column>
-
-        <el-table-column
+          min-width="10%"
           align="center"
           prop="admin_account"
-          label="操作人账号"
+          label="admin_account"
         >
           <template slot-scope="{row}">
             {{row.admin_account}}
@@ -175,6 +94,40 @@
         </el-table-column>
 
         <el-table-column
+          min-width="10%"
+          align="center"
+          prop="amount"
+          label="amount"
+        >
+          <template slot-scope="{row}">
+            {{row.amount}}
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          min-width="13%"
+          align="center"
+          prop="count"
+          label="count"
+        >
+          <template slot-scope="{row}">
+            {{row.count}}
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          min-width="10%"
+          align="center"
+          prop="title"
+          label="title"
+        >
+          <template slot-scope="{row}">
+            {{row.title}}
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          min-width="13%"
           align="center"
           prop="created_at"
           label="提交时间"
@@ -184,22 +137,20 @@
           </template>
         </el-table-column>
 
+
         <el-table-column
+          min-width="15%"
           align="center"
-          prop="status"
-          label="状态"
+          prop="remark"
+          label="备注"
         >
           <template slot-scope="{row}">
-            <el-tag v-if="row.status===1" type="warning" size="medium">待发布</el-tag>
-            <el-tag v-else-if="row.status===2" type="info" size="medium">待审核</el-tag>
-            <el-tag v-else-if="row.status===3" type="success" size="medium">已通过</el-tag>
-            <el-tag v-else-if="row.status===4" type="danger" size="medium">已拒绝</el-tag>
-            <el-tag v-else type="primary" size="medium">已结束</el-tag>
+            {{row.remark}}
           </template>
         </el-table-column>
 
-
         <el-table-column
+          min-width="18%"
           align="center"
           prop=""
           label="操作"
@@ -280,13 +231,17 @@
           limit: 10,
           status:undefined
         },
-        states : [
-          {status:1,name:'待发布'},
-          {status:2,name:'待审核'},
-          {status:3,name:'已通过'},
-          {status:4,name:'已拒绝'},
-          {status:5,name:'已关闭'},
-          {status:6,name:'已删除'},
+        types:[
+          {type:1,name:'扣钱'},
+          {type:2,name:'加钱'},
+        ],
+        operates : [
+          {operate:1,name:'存款'},
+          {operate:2,name:'取款'},
+          {operate:3,name:'发布任务'},
+          {operate:4,name:'佣金'},
+          {operate:5,name:'任务结束退回'},
+          {operate:6,name:'提取佣金'},
         ],
         edit:{
           real_name:'',
@@ -356,7 +311,9 @@
           }
 
           let data = {
-            status : this.listQuery.status!==''?this.listQuery.status:undefined,
+            username: this.listQuery.username,
+            type : this.listQuery.type!==''?this.listQuery.type:undefined,
+            operate : this.listQuery.operate!==''?this.listQuery.operate:undefined,
             page: this.listQuery.page,
             page_size: this.listQuery.limit,
             start_time:this.listQuery.value1?parseInt(this.listQuery.value1/1000):undefined,
@@ -365,7 +322,7 @@
           }
 
           this.search_loading = true;
-          this.$http.get(`${this.url}/task_publish`,data).then((resp)=>{
+          this.$http.get(`${this.url}/bill`,data).then((resp)=>{
 
             this.search_loading = false;
             if (resp.code === 200) {
