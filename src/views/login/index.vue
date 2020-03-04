@@ -146,7 +146,8 @@ export default {
                 this.$router.push({ path: this.redirect || '/' ,query: this.otherQuery})
               } else {
                 //管理员
-                this.getAllAuths(date);
+                this.$router.push({ path: this.redirect || '/' ,query: this.otherQuery})
+                //this.getAllAuths(date);
               }
             } else {
               this.$message({

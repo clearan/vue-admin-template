@@ -39,103 +39,96 @@ var getRouter;
 const whiteList = ['/login']
 
 router.beforeEach( async(to, from, next) => {
-  var constantRoutes = [],permission = LocalStorage.get('permission'),base = LocalStorage.get('base')
-  // console.log(permission);return
-  if (permission) {
-    let main =
-      {
-        path: '/',
-        component: 'Layout',
-        redirect: '/dashboard',
-        children: [{
-          path: 'dashboard',
-          name: 'Dashboard',
-          component: 'dashboard/index',
-          meta: { title: '系统首页', icon: 'dashboard' }
-        }]
-      }
-
-
+  NProgress.start()
+  var constantRoutes = [],permission = LocalStorage.get('permission'),base = LocalStorage.get('base'),token = LocalStorage.get('token')
+  if (token) {
     if (base.role_id === 1) {
       //系统管理员
       let data = {
         parent_id:1,
         request_param:'GET'
       }
+      try{
+        await get(`${Vue.prototype.url}/admin_permission`,data).then( resp =>{
+          //console.log(resp)
+          if (resp.code === 200) {
+            if (resp.data) {
+              let res = getTree(resp.data)
 
-      await get(`${Vue.prototype.url}/admin_permission`,data).then( resp =>{
-        //console.log(resp)
-        if (resp.code === 200) {
-          if (resp.data) {
-            let res = getTree(resp.data)
-
-            res.treeData.sort(compare('sort'))
-            let g_route = '' ,init=''
-            if (!JSON.stringify(res.treeData).includes('dashboard')) {
-              if (res.treeData[0].auth2_list !==undefined) {
-                g_route = res.treeData[0].auth2_list[0]['permission_path']
-              } else {
-                g_route = res.treeData[0]['permission_path']
-              }
-              init = {
-                path:"/",
-                redirect: '/'+g_route
-              }
-            }else{
-              init ={
-                path:"/",
-                redirect: '/dashboard'
-              }
-            }
-
-            var arr = []
-            for (var i=0;i<res.treeData.length;i++) {
-              var obj = {}
-
-              obj.path = '/'+res.treeData[i]['permission_path']
-              obj.name = '/'+res.treeData[i]['permission_path']
-              obj.component = 'Layout'
-              obj.children = []
-              obj.redirect = '/'+res.treeData[i]['permission_path']+'/index'
-
-              if (res.treeData[i]['auth2_list'] !== undefined) {
-                //有二级菜单
-                obj.meta = {title:res.treeData[i]['permission_name']}
-                obj.alwaysShow = true
-                for (var j=0;j<res.treeData[i]['auth2_list'].length;j++) {
-                  var child = {}
-                  //加入详情页
-                  if (res.treeData[i]['auth2_list'][j]['status'] === 2) {
-                    child.hidden = true
-                  }
-                  child.path = '/'+res.treeData[i]['auth2_list'][j]['permission_path']
-                  child.name = '/'+res.treeData[i]['auth2_list'][j]['permission_path']
-                  child.component = res.treeData[i]['auth2_list'][j]['permission_path']
-                  child.meta = { title: res.treeData[i]['auth2_list'][j]['permission_name']}
-                  obj.children.push(child)
+              res.treeData.sort(compare('sort'))
+              let g_route = '' ,init=''
+              if (!JSON.stringify(res.treeData).includes('dashboard')) {
+                if (res.treeData[0].auth2_list !==undefined) {
+                  g_route = res.treeData[0].auth2_list[0]['permission_path']
+                } else {
+                  g_route = res.treeData[0]['permission_path']
                 }
-              } else {
-                var child2 = {},url =res.treeData[i]['permission_path']
-                child2.path = 'index'
-                child2.component = url+'/index'
-                child2.name = res.treeData[i]['permission_path']
-                child2.meta = { title: res.treeData[i]['permission_name']}
-                obj.children.push(child2)
+                init = {
+                  path:"/",
+                  redirect: '/'+g_route
+                }
+              }else{
+                init ={
+                  path:"/",
+                  redirect: '/dashboard'
+                }
               }
-              //console.log(obj)
-              arr.push(obj)
+
+              var arr = []
+              for (var i=0;i<res.treeData.length;i++) {
+                var obj = {}
+
+                obj.path = '/'+res.treeData[i]['permission_path']
+                obj.name = '/'+res.treeData[i]['permission_path']
+                obj.component = 'Layout'
+                obj.children = []
+                obj.redirect = '/'+res.treeData[i]['permission_path']+'/index'
+
+                if (res.treeData[i]['auth2_list'] !== undefined) {
+                  //有二级菜单
+                  obj.meta = {title:res.treeData[i]['permission_name']}
+                  obj.alwaysShow = true
+                  for (var j=0;j<res.treeData[i]['auth2_list'].length;j++) {
+                    var child = {}
+                    //加入详情页
+                    if (res.treeData[i]['auth2_list'][j]['status'] === 2) {
+                      child.hidden = true
+                    }
+                    child.path = '/'+res.treeData[i]['auth2_list'][j]['permission_path']
+                    child.name = '/'+res.treeData[i]['auth2_list'][j]['permission_path']
+                    child.component = res.treeData[i]['auth2_list'][j]['permission_path']
+                    child.meta = { title: res.treeData[i]['auth2_list'][j]['permission_name']}
+                    obj.children.push(child)
+                  }
+                } else {
+                  var child2 = {},url =res.treeData[i]['permission_path']
+                  child2.path = 'index'
+                  child2.component = url+'/index'
+                  child2.name = res.treeData[i]['permission_path']
+                  child2.meta = { title: res.treeData[i]['permission_name']}
+                  obj.children.push(child2)
+                }
+                //console.log(obj)
+                arr.push(obj)
+              }
+              constantRoutes.push(init)
+              constantRoutes = constantRoutes.concat(arr)
+              constantRoutes.push( { path: '*', redirect: '/404', hidden: true })
+               constantRoutes = constantRoutes.filter((item)=>{
+                return item.permission_name!=='test'
+              })
+              console.log(constantRoutes)
             }
-            constantRoutes.push(init)
-            constantRoutes = constantRoutes.concat(arr)
-            constantRoutes.push( { path: '*', redirect: '/404', hidden: true })
-            console.log(constantRoutes)
           }
-        }else{
-          alert('获取信息失败')
-        }
-      })
+        })
+      }catch (error) {
+        Message.error(error || 'Has Error')
+        next(`/login?redirect=${to.path}`)
+        NProgress.done()
+      }
 
     } else {
+      //其他角色
       permission.sort(compare('sort'))
       let g_route = '' ,init=''
       if (!JSON.stringify(permission).includes('dashboard')) {
@@ -195,11 +188,11 @@ router.beforeEach( async(to, from, next) => {
       constantRoutes.push( { path: '*', redirect: '/404', hidden: true })
     }
   }
-  NProgress.start()
+
   if (!getRouter) { //不加这个判断，路由会陷入死循环
     //console.log(permission)
     if (!LocalStorage.get('router')) {
-      if (!permission) {
+      if (!token) {
         if (whiteList.indexOf(to.path) !== -1) {
           //当前路由走白名单
           next()
