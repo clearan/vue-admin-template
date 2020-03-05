@@ -178,6 +178,7 @@
     components: {Pagination, Timeselect},
     data() {
       return {
+        bp:LocalStorage.get('bp'),
         button:['','','','','','',''],
         search_loading:false,
         listQuery: {
@@ -244,7 +245,11 @@
       },
 
       handleAuth(row) {
-        //console.log(row)
+        if (!this.bp.includes('system/role_auth')) {
+          this.msgTip('您没有此权限')
+          return
+        }
+
         this.role.id = row.id;
         this.role.role_name = row.role_name;
         this.role.remark = row.remark;
@@ -254,7 +259,7 @@
         let data = {
           id: row.id,
           request_param:'GET',
-          //t:new Date().getTime()
+          t:new Date().getTime()
         };
 
         this.$http.get(`${this.url}/admin_role_maps`, data).then(resp => {
@@ -353,10 +358,19 @@
 
 
       startEdit(row) {
+        if (!this.bp.includes('system/role_edit')) {
+          this.msgTip('您没有此权限')
+          return
+        }
         row.edit = true
       },
 
       changeState(row) {
+        if (!this.bp.includes('system/role_edit')) {
+          row.status = !row.status
+          this.msgTip('您没有此权限')
+          return
+        }
 
         let data = {
           id: row.id,

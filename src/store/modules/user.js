@@ -1,12 +1,15 @@
 import { login, logout, getInfo } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { resetRouter } from '@/router'
-
+import {get,patch} from '@/utils/request'
+import Vue from 'vue'
+import qs from "qs";
 const getDefaultState = () => {
   return {
     token: getToken(),
     name: '',
-    avatar: ''
+    avatar: '',
+    per:[]
   }
 }
 
@@ -24,6 +27,10 @@ const mutations = {
   },
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar
+  },
+
+  SET_PER: (state, per) => {
+    state.per = per
   }
 }
 
@@ -58,6 +65,39 @@ const actions = {
         commit('SET_NAME', name)
         commit('SET_AVATAR', avatar)
         resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+
+  getAdminPer({ commit }) {
+    return new Promise((resolve, reject) => {
+      let data = {
+        parent_id:1,
+        request_param:'GET'
+      }
+      get(`${Vue.prototype.url}/admin_permission`,data).then(response => {
+        if (response.code === 200) {
+          commit('SET_PER', response.data)
+          resolve(response.data)
+        }
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+
+  getOtherPer({ commit }) {
+    return new Promise((resolve, reject) => {
+      let data = {
+        request_param:'PATCH'
+      }
+      patch(`${Vue.prototype.url}/admin`,qs.stringify(data)).then(response => {
+        if (response.code === 200) {
+          commit('SET_PER', response.data)
+          resolve(response.data)
+        }
       }).catch(error => {
         reject(error)
       })

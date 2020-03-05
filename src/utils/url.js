@@ -8,6 +8,7 @@ var main_url = [
   {value:'system/role_list',desc:'角色列表'},
   {value:'system/role_add',desc:'添加角色'},
   {value:'system/role_edit',desc:'编辑角色'},
+  {value:'system/role_auth',desc:'角色绑定权限'},
   {value:'system/user_list',desc:'用户列表'},
   {value:'system/user_add',desc:'用户列表'},
   {value:'system/user_edit',desc:'用户编辑'},
@@ -27,7 +28,9 @@ var main_url = [
   {value:'order',desc:'订单管理'},
   {value:'money',desc:'财务管理'},
   {value:'report',desc:'报表管理'},
-  {value:'test',desc:'测试'},
+  {value:'test',desc:'测试管理'},
+  {value:'test/index',desc:'aa'},
+  {value:'test/test',desc:'bb'},
 ]
 
 // [

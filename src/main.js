@@ -14,13 +14,14 @@ import router from './router'
 import '@/icons' // icon
 import '@/utils/global'//全局
 import '@/permission' // permission control
-import {get, post,put} from '@/utils/request'
+import {get, post,put,patch} from '@/utils/request'
 
 //将axios封装加入到Vue 原型里 直接this.$http.get调用
 Vue.prototype.$http = {
   get,
   post,
-  put
+  put,
+  patch
 }
 Vue.prototype.url = 'http://10.10.35.250:8199/v1'
 

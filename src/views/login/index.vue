@@ -137,18 +137,9 @@ export default {
 
             if( resp.code === 200 ) {
               let date = new Date().getTime();
-              LocalStorage.set("token", resp.data.token, date + 60*60*1000);
+              LocalStorage.set("token", resp.data.token, date + 10000*60*60*1000);
               LocalStorage.set("base", resp.data.base, date+10000*60*60*1000)
-              //console.log(LocalStorage.get('token'))
-              if (resp.data.permission) {
-                //console.log(resp);return
-                this.getTree(resp.data.permission,date)
-                this.$router.push({ path: this.redirect || '/' ,query: this.otherQuery})
-              } else {
-                //管理员
-                this.$router.push({ path: this.redirect || '/' ,query: this.otherQuery})
-                //this.getAllAuths(date);
-              }
+              this.$router.push({ path: this.redirect || '/' ,query: this.otherQuery})
             } else {
               this.$message({
                 message:resp.msg,
