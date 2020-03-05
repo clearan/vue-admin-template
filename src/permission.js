@@ -47,6 +47,12 @@ router.beforeEach( async(to, from, next) => {
     if (per) {
       next()
     } else {
+      //获取site配置信息
+      try{
+        await store.dispatch('user/getConfig')
+      }catch (e) {
+        Message.error(error || 'Has Error')
+      }
       if (base.role_id === 1) {
         //系统管理员
         try{

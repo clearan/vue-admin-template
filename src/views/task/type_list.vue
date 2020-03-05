@@ -52,7 +52,7 @@
           min-width="10%"
           align="center"
           prop="title"
-          label="title"
+          label="任务标题"
         >
           <template slot-scope="{row}">
             {{ row.title }}
@@ -64,10 +64,25 @@
           min-width="10%"
           align="center"
           prop="describe"
-          label="describe"
+          label="任务描述"
         >
           <template slot-scope="{row}">
             {{row.describe}}
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          min-width="18%"
+          align="center"
+          prop="user_state"
+          label="状态"
+        >
+          <template slot-scope="{row}">
+            <el-switch
+              disabled
+              v-model="row.status"
+            >
+            </el-switch>
           </template>
         </el-table-column>
 
@@ -316,6 +331,9 @@
             this.search_loading = false;
             if (resp.code === 200) {
               if (resp.data) {
+                resp.data.forEach(item=>{
+                  item.status = item.status === 1
+                })
                 this.member_list = resp.data;
                 this.total = resp.page.TotalSize
               }else {
@@ -343,10 +361,10 @@
         this.edit.title = row.title;
         this.edit.describe = row.describe;
         this.edit.sort = row.sort;
-        this.edit.status = row.status;
+        this.edit.status = row.status ? '1': '2';
         this.dialogVisibleEdit = true
         this.$nextTick(()=>{
-          this.$refs.edit.resetFields();//等弹窗里的form表单的dom渲染完在执行this.$refs.edit.resetFields()，去除验证
+          this.$refs.edit.clearValidate();//等弹窗里的form表单的dom渲染完在执行this.$refs.edit.resetFields()，去除验证
         });
       },
       submitEdit() {
@@ -362,14 +380,13 @@
           if (valid) {
             this.$http.put(`${this.url}/task`,qs.stringify(data)).then( resp => {
               if (resp.code === 200) {
+                this.dialogVisibleEdit = false
+                this.getList();
                 this.$message({
                   message:'更新成功',
                   type:'success',
                   center:true
-                });
-                setTimeout(() => {
-                  window.location.reload()
-                },1000)
+                })
               } else {
                 this.msgTip(resp.msg)
               }

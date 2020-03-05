@@ -235,14 +235,14 @@
           {type:1,name:'扣钱'},
           {type:2,name:'加钱'},
         ],
-        operates : [
-          {operate:1,name:'存款'},
-          {operate:2,name:'取款'},
-          {operate:3,name:'发布任务'},
-          {operate:4,name:'佣金'},
-          {operate:5,name:'任务结束退回'},
-          {operate:6,name:'提取佣金'},
-        ],
+        // operates : [
+        //   {operate:1,name:'存款'},
+        //   {operate:2,name:'取款'},
+        //   {operate:3,name:'发布任务'},
+        //   {operate:4,name:'佣金'},
+        //   {operate:5,name:'任务结束退回'},
+        //   {operate:6,name:'提取佣金'},
+        // ],
         edit:{
           real_name:'',
           nick_name:'',
@@ -254,6 +254,17 @@
         },
         total:0,
         dialogVisibleEdit: false,
+      }
+    },
+
+    computed:{
+
+      operates() {
+        let res= this.$store.state.user.config['bill'].map(item=>{
+          let obj = {operate:item.value,name:item.name}
+          return obj
+        })
+        return res
       }
     },
 

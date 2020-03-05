@@ -280,14 +280,14 @@
           limit: 10,
           status:undefined
         },
-        states : [
-          {status:1,name:'待发布'},
-          {status:2,name:'待审核'},
-          {status:3,name:'已通过'},
-          {status:4,name:'已拒绝'},
-          {status:5,name:'已关闭'},
-          {status:6,name:'已删除'},
-        ],
+        // states : [
+        //   {status:1,name:'待发布'},
+        //   {status:2,name:'待审核'},
+        //   {status:3,name:'已通过'},
+        //   {status:4,name:'已拒绝'},
+        //   {status:5,name:'已关闭'},
+        //   {status:6,name:'已删除'},
+        // ],
         edit:{
           real_name:'',
           nick_name:'',
@@ -299,6 +299,17 @@
         },
         total:0,
         dialogVisibleEdit: false,
+      }
+    },
+
+    computed:{
+
+      states() {
+        let res= this.$store.state.user.config['task_publish_status'].map(item=>{
+          let obj = {status:item.value,name:item.name}
+          return obj
+        })
+        return res
       }
     },
 

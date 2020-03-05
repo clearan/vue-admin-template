@@ -226,13 +226,13 @@
           limit: 10,
           status:undefined
         },
-        states : [
-          {status:1,name:'进行中'},
-          {status:2,name:'已提交'},
-          {status:3,name:'已拒绝'},
-          {status:4,name:'重新提交'},
-          {status:5,name:'已结算'},
-        ],
+        // states : [
+        //   {status:1,name:'进行中'},
+        //   {status:2,name:'已提交'},
+        //   {status:3,name:'已拒绝'},
+        //   {status:4,name:'重新提交'},
+        //   {status:5,name:'已结算'},
+        // ],
         edit:{
           real_name:'',
           nick_name:'',
@@ -246,6 +246,19 @@
         dialogVisibleEdit: false,
       }
     },
+
+    computed:{
+
+      states() {
+        let res= this.$store.state.user.config['task_subscribe_status'].map(item=>{
+          let obj = {status:item.value,name:item.name}
+          return obj
+        })
+        return res
+      }
+    },
+
+
     filters:{
       //时间戳
       formatDate(time) {

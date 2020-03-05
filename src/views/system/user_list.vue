@@ -25,7 +25,7 @@
           <el-button  class="filter-item" type="primary" style="margin-left: 20px;" icon="el-icon-search" @click="handleFilter" :loading="search_loading">
             搜索
           </el-button>
-          <el-button class="filter-item" type="primary" icon="el-icon-plus" @click="addMem">
+          <el-button class="filter-item" type="primary" icon="el-icon-plus" @click="addMem" v-if="this.bp && this.bp.includes('system/user_add')">
             新增
           </el-button>
         </div>
@@ -185,11 +185,13 @@
     import Timeselect from '@/components/Timeselect'
     import Pagination from '@/components/Pagination'
 
+
     export default {
         name:'List',
         components: { Pagination,Timeselect },
         data() {
             return {
+                bp:LocalStorage.get('bp'),
                 pwd:'',
                 suc_show:false,
                 user_list: [],
@@ -216,6 +218,7 @@
                 search_loading: false,
             }
         },
+
         methods: {
 
             get_time_result(obj) {
@@ -403,7 +406,6 @@
                     }
                 })
             },
-
 
             msgTip(name,val) {
 

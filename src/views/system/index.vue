@@ -441,27 +441,7 @@
       },
 
       handleEdit(row) {
-        if (!LocalStorage.get('token')) {
-          var clearTime = 3
-          var time = setInterval(() => {
-            clearTime--
-            if (clearTime === 1) {
-              clearInterval(time)
-            }
-            a.message = '您的登录已过期，'+clearTime+'秒后跳转至登录页面'
-          }, 1000)
 
-          var a = Message({
-            message:'您的登录已过期，3秒后跳转至登录页面',
-            type:'error',
-            center:true,
-            onClose:action=>{
-              localStorage.clear();
-              window.location.href=process.env.VUE_APP_PUSH_URL
-            }
-          })
-          return;
-        }
         if (!this.bp.includes('system/auth_edit')) {
           this.msgTip('您没有此权限')
           return

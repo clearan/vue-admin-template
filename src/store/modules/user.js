@@ -9,7 +9,8 @@ const getDefaultState = () => {
     token: getToken(),
     name: '',
     avatar: '',
-    per:[]
+    per:[],
+    config:[]
   }
 }
 
@@ -31,6 +32,10 @@ const mutations = {
 
   SET_PER: (state, per) => {
     state.per = per
+  },
+
+  SET_Config: (state, config) => {
+    state.config = config
   }
 }
 
@@ -96,6 +101,19 @@ const actions = {
       patch(`${Vue.prototype.url}/admin`,qs.stringify(data)).then(response => {
         if (response.code === 200) {
           commit('SET_PER', response.data)
+          resolve(response.data)
+        }
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+
+  getConfig({ commit }) {
+    return new Promise((resolve, reject) => {
+      get(`${Vue.prototype.url}/site_config`).then(response => {
+        if (response.code === 200) {
+          commit('SET_Config', response.data)
           resolve(response.data)
         }
       }).catch(error => {

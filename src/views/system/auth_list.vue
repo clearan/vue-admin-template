@@ -441,12 +441,6 @@
       },
 
       handleEdit(row) {
-
-        if (!this.bp.includes('system/auth_edit')) {
-          this.msgTip('您没有此权限')
-          return
-        }
-
         this.edit.permission_name = row.permission_name;
         this.edit.permission_code = row.permission_code;
         this.edit.permission_path = row.permission_path;

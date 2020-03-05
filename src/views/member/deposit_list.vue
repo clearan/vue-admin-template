@@ -231,12 +231,12 @@
           admin_account: undefined,
           status:undefined
         },
-        states : [
-          {status:1,name:'提现中'},
-          {status:2,name:'审核中'},
-          {status:3,name:'成功'},
-          {status:4,name:'拒绝'},
-        ],
+        // states : [
+        //   {status:1,name:'提现中'},
+        //   {status:2,name:'审核中'},
+        //   {status:3,name:'成功'},
+        //   {status:4,name:'拒绝'},
+        // ],
         edit:{
           real_name:'',
           nick_name:'',
@@ -250,6 +250,18 @@
         dialogVisibleEdit: false,
       }
     },
+
+    computed:{
+
+      states() {
+        let res= this.$store.state.user.config['user_deposit'].map(item=>{
+          let obj = {status:item.value,name:item.name}
+          return obj
+        })
+        return res
+      }
+    },
+
     filters:{
       //时间戳
       formatDate(time) {
