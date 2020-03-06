@@ -13,6 +13,7 @@ var main_url = [
   {value:'system/user_add',desc:'用户列表'},
   {value:'system/user_edit',desc:'用户编辑'},
   {value:'system/log_list',desc:'日志列表'},
+  {value:'system/bank_list',desc:'银行卡列表'},
   {value:'member',desc:'会员管理'},
   //{value:'member/member_list',desc:'会员列表'},
   {value:'member/index',desc:'会员列表'},

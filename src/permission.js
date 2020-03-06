@@ -53,6 +53,8 @@ router.beforeEach( async(to, from, next) => {
       }catch (e) {
         Message.error(error || 'Has Error')
       }
+
+
       if (base.role_id === 1) {
         //系统管理员
         try{

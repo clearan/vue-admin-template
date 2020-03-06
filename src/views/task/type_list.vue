@@ -5,6 +5,7 @@
     background-color: #fff;
     color: #303133;
     transition: .3s;
+    box-shadow: 0 2px 10px 0 rgba(0,0,0,0.1);
     min-height: 798px;"
   >
     <div class="app-container">
@@ -32,7 +33,7 @@
 
       <el-table
         border fit highlight-current-row style="width: 100%;"
-        :data="member_list"
+        :data="list"
         row-key="Id"
         :default-sort = "{prop: 'CreatedTime', order: 'descending'}"
       >
@@ -189,6 +190,7 @@
   import {formatMoney} from '@/utils/money'
   import qs from 'qs'
   import Timeselect from '@/components/Timeselect'
+
   export default {
     components: { Pagination,Timeselect},
     data() {
@@ -205,7 +207,7 @@
         bp:LocalStorage.get('bp'),
         button:['','','','','','',''],
         search_loading:false,
-        member_list:[],
+        list:[],
         listQuery: {
           value1:'',
           value2:'',
@@ -214,10 +216,10 @@
           title: '',
           status:undefined
         },
-        states : [
-          {status:1,name:'正常'},
-          {status:2,name:'禁用'},
-        ],
+        // states : [
+        //   {status:1,name:'正常'},
+        //   {status:2,name:'禁用'},
+        // ],
         add:{
           title:'',
           describe:'',
@@ -243,6 +245,18 @@
         dialogVisibleEdit: false,
       }
     },
+
+    computed:{
+
+      states() {
+        let res= this.$store.state.user.config['task_status'].map(item=>{
+          let obj = {status:item.value,name:item.name}
+          return obj
+        })
+        return res
+      }
+    },
+
     filters:{
       //时间戳
       formatDate(time) {
@@ -289,14 +303,13 @@
           if (valid) {
             this.$http.post(`${this.url}/task`,qs.stringify(data)).then( resp => {
               if (resp.code === 200) {
+                this.dialogVisibleAdd= false
+                this.getList();
                 this.$message({
                   message:'创建成功',
                   type:'success',
                   center:true
-                });
-                setTimeout(() => {
-                  window.location.reload()
-                },1000)
+                })
               } else {
                 this.msgTip(resp.msg)
               }
@@ -334,10 +347,10 @@
                 resp.data.forEach(item=>{
                   item.status = item.status === 1
                 })
-                this.member_list = resp.data;
+                this.list = resp.data;
                 this.total = resp.page.TotalSize
               }else {
-                this.member_list = [];
+                this.list = [];
                 this.total = 0
               }
             }else{

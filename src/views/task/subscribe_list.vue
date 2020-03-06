@@ -4,6 +4,7 @@
     border: 1px solid #ebeef5;
     background-color: #fff;
     color: #303133;
+    box-shadow: 0 2px 10px 0 rgba(0,0,0,0.1);
     transition: .3s;
     min-height: 798px;"
   >
@@ -34,10 +35,9 @@
       >
 
         <el-table-column
-          min-width="10%"
           align="center"
           prop="id"
-          label="id"
+          label="ID"
         >
           <template slot-scope="{row}">
             {{ row.id }}
@@ -45,22 +45,19 @@
         </el-table-column>
 
         <el-table-column
-          min-width="10%"
           align="center"
-          prop="user_id"
-          label="user_id"
+          prop="task_id"
+          label="任务ID"
         >
           <template slot-scope="{row}">
-            {{ row.user_id }}
+            {{ row.task_id }}
           </template>
-
         </el-table-column>
 
         <el-table-column
-          min-width="10%"
           align="center"
           prop="project"
-          label="project"
+          label="项目名称"
         >
           <template slot-scope="{row}">
             {{row.project}}
@@ -68,32 +65,9 @@
         </el-table-column>
 
         <el-table-column
-          min-width="10%"
-          align="center"
-          prop="task_type"
-          label="task_type"
-        >
-          <template slot-scope="{row}">
-            {{row.task_type}}
-          </template>
-        </el-table-column>
-
-        <el-table-column
-          min-width="10%"
-          align="center"
-          prop="admin_account"
-          label="admin_account"
-        >
-          <template slot-scope="{row}">
-            {{row.admin_account}}
-          </template>
-        </el-table-column>
-
-        <el-table-column
-          min-width="10%"
           align="center"
           prop="amount"
-          label="amount"
+          label="任务佣金"
         >
           <template slot-scope="{row}">
             {{row.amount}}
@@ -101,29 +75,53 @@
         </el-table-column>
 
         <el-table-column
-          min-width="10%"
           align="center"
-          prop="merchant_id"
-          label="merchant_id"
+          prop="step"
+          label="任务步骤"
+          :show-overflow-tooltip="true"
         >
           <template slot-scope="{row}">
-            {{row.merchant_id}}
+            {{row.step}}
           </template>
         </el-table-column>
 
+
         <el-table-column
-          min-width="10%"
           align="center"
           prop="merchant_name"
-          label="merchant_name"
+          label="卖家账号"
         >
           <template slot-scope="{row}">
             {{row.merchant_name}}
           </template>
         </el-table-column>
 
+
         <el-table-column
-          min-width="13%"
+          align="center"
+          prop="user_name"
+          label="买家账号"
+        >
+          <template slot-scope="{row}">
+            {{ row.user_name }}
+          </template>
+
+        </el-table-column>
+
+
+        <el-table-column
+          align="center"
+          prop="admin_account"
+          label="操作人账号"
+        >
+          <template slot-scope="{row}">
+            {{row.admin_account}}
+          </template>
+        </el-table-column>
+
+
+        <el-table-column
+          min-width="90"
           align="center"
           prop="created_at"
           label="提交时间"
@@ -135,7 +133,6 @@
 
 
         <el-table-column
-          min-width="15%"
           align="center"
           prop="remark"
           label="备注"
@@ -146,7 +143,6 @@
         </el-table-column>
 
         <el-table-column
-          min-width="18%"
           align="center"
           prop=""
           label="操作"
@@ -257,7 +253,6 @@
         return res
       }
     },
-
 
     filters:{
       //时间戳

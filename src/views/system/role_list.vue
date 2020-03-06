@@ -3,6 +3,7 @@
     border: 1px solid #ebeef5;
     background-color: #fff;
     color: #303133;
+    box-shadow: 0 2px 10px 0 rgba(0,0,0,0.1);
     transition: .3s;
     min-height: 798px;">
     <div class="app-container">
@@ -342,13 +343,7 @@
             } else {
               this.msgTip(resp.msg)
             }
-          }).catch((error) => {
-            if (error !== 'loginErr') {
-              console.log(error);
-              this.msgTip('系统繁忙，请稍后重试')
-            }
           })
-
         }
       },
 
@@ -585,7 +580,7 @@
             }
           } else {
             this.$message({
-              message:'您的登录已过期，请重新登录',
+              message:resp.msg,
               type:'error',
               center:true
             })
@@ -596,7 +591,13 @@
 
     created() {
       this.getList()
-      this.getAuths()
+      if (JSON.stringify(this.$store.state.user.per).includes('system/index')) {
+        this.getAuths()
+        console.log('有权限')
+      }else{
+        console.log('没权限')
+      }
+
     }
   }
 </script>

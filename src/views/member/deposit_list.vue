@@ -4,6 +4,7 @@
     border: 1px solid #ebeef5;
     background-color: #fff;
     color: #303133;
+    box-shadow: 0 2px 10px 0 rgba(0,0,0,0.1);
     transition: .3s;
     min-height: 798px;"
   >
@@ -30,16 +31,15 @@
 
       <el-table
         border fit highlight-current-row style="width: 100%;"
-        :data="member_list"
+        :data="list"
         row-key="Id"
         :default-sort = "{prop: 'CreatedTime', order: 'descending'}"
       >
 
         <el-table-column
-          min-width="12%"
           align="center"
-          prop="id"
-          label="会员编号"
+          prop="ID"
+          label="ID"
         >
           <template slot-scope="{row}">
             {{ row.id }}
@@ -48,32 +48,20 @@
         </el-table-column>
 
         <el-table-column
-          min-width="10%"
           align="center"
-          prop="real_name"
-          label="真实姓名"
+          prop="user_id"
+          label="用户ID"
         >
           <template slot-scope="{row}">
-            {{row.real_name}}
+            {{ row.user_id }}
           </template>
+
         </el-table-column>
 
         <el-table-column
-          min-width="10%"
-          align="center"
-          prop="nickname"
-          label="昵称"
-        >
-          <template slot-scope="{row}">
-            {{row.nickname}}
-          </template>
-        </el-table-column>
-
-        <el-table-column
-          min-width="10%"
           align="center"
           prop="username"
-          label="username"
+          label="用户名"
         >
           <template slot-scope="{row}">
             {{row.username}}
@@ -81,21 +69,9 @@
         </el-table-column>
 
         <el-table-column
-          min-width="13%"
-          align="center"
-          prop="reg_ip"
-          label="reg_ip"
-        >
-          <template slot-scope="{row}">
-            {{row.reg_ip}}
-          </template>
-        </el-table-column>
-
-        <el-table-column
-          min-width="10%"
           align="center"
           prop="phone"
-          label="手机号"
+          label="电话"
         >
           <template slot-scope="{row}">
             {{row.phone}}
@@ -103,10 +79,64 @@
         </el-table-column>
 
         <el-table-column
-          min-width="13%"
+          align="center"
+          prop="pay_type"
+          label="类型"
+        >
+          <template slot-scope="{row}">
+            <el-tag v-if="row.pay_type===1"  size="medium">支付宝</el-tag>
+            <el-tag v-else-if="row.pay_type===2"  size="medium">微信</el-tag>
+            <el-tag v-else  size="medium">银行卡转账</el-tag>
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          align="center"
+          prop="amount"
+          label="交易金额"
+        >
+          <template slot-scope="{row}">
+            {{row.amount}}
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          align="center"
+          prop="real_amount"
+          label="实际到账金额"
+        >
+          <template slot-scope="{row}">
+            {{row.real_amount}}
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          align="center"
+          prop="status"
+          label="状态"
+        >
+          <template slot-scope="{row}">
+            <el-tag v-if="row.status===1"  size="medium">提现中</el-tag>
+            <el-tag v-else-if="row.status===2"  size="medium">审核中</el-tag>
+            <el-tag v-else-if="row.status===3"  size="medium">成功</el-tag>
+            <el-tag v-else  size="medium">拒绝</el-tag>
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          align="center"
+          prop="admin_account"
+          label="操作人"
+        >
+          <template slot-scope="{row}">
+            {{row.admin_account}}
+          </template>
+        </el-table-column>
+
+        <el-table-column
           align="center"
           prop="created_at"
-          label="注册时间"
+          label="创建时间"
         >
           <template slot-scope="{row}">
             {{row.created_at}}
@@ -114,41 +144,6 @@
         </el-table-column>
 
         <el-table-column
-          min-width="10%"
-          align="center"
-          prop="balance"
-          label="balance"
-        >
-          <template slot-scope="{row}">
-            {{row.balance}}
-          </template>
-        </el-table-column>
-
-        <el-table-column
-          min-width="18%"
-          align="center"
-          prop="commission"
-          label="commission"
-        >
-          <template slot-scope="{row}">
-            {{row.commission}}
-          </template>
-        </el-table-column>
-
-
-        <el-table-column
-          min-width="15%"
-          align="center"
-          prop="remark"
-          label="备注"
-        >
-          <template slot-scope="{row}">
-            {{row.remark}}
-          </template>
-        </el-table-column>
-
-        <el-table-column
-          min-width="18%"
           align="center"
           prop=""
           label="操作"
@@ -220,7 +215,7 @@
       return {
         button:['','','','','','',''],
         search_loading:false,
-        member_list:[],
+        list:[],
         listQuery: {
           value1:'',
           value2:'',
@@ -254,7 +249,7 @@
     computed:{
 
       states() {
-        let res= this.$store.state.user.config['user_deposit'].map(item=>{
+        let res= this.$store.state.user.config['user_deposit_status'].map(item=>{
           let obj = {status:item.value,name:item.name}
           return obj
         })
@@ -319,10 +314,10 @@
             this.search_loading = false;
             if (resp.code === 200) {
               if (resp.data) {
-                this.member_list = resp.data;
+                this.list = resp.data;
                 this.total = resp.page.TotalSize
               }else {
-                this.member_list = [];
+                this.list = [];
                 this.total = 0
               }
             }else{

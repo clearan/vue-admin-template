@@ -4,33 +4,11 @@
     border: 1px solid #ebeef5;
     background-color: #fff;
     color: #303133;
-    transition: .3s;
     box-shadow: 0 2px 10px 0 rgba(0,0,0,0.1);
+    transition: .3s;
     min-height: 798px;"
   >
     <div class="app-container">
-
-      <div class="filter-container">
-
-        <timeselect @getTimeResult="get_time_result" @getTime="get_time"/>
-
-        <div style="margin-top:10px">
-
-          <el-select v-model="listQuery.module" placeholder="模型" clearable style="width: 110px;" class="filter-item">
-            <el-option v-for="item in modules" :key="item.module" :label="item.name" :value="item.module" />
-          </el-select>
-          <el-select v-model="listQuery.action" placeholder="行为" clearable style="width: 90px;" class="filter-item">
-            <el-option v-for="item in actions" :key="item.action" :label="item.name" :value="item.action" />
-          </el-select>
-          <el-select v-model="listQuery.level" placeholder="等级" clearable style="width: 90px;" class="filter-item">
-            <el-option v-for="item in levels" :key="item.level" :label="item.name" :value="item.level" />
-          </el-select>
-          <el-button  class="filter-item" type="primary"  icon="el-icon-search" @click="handleFilter" :loading="search_loading">
-            搜索
-          </el-button>
-        </div>
-
-      </div>
 
       <el-table
         border fit highlight-current-row style="width: 100%;"
@@ -42,72 +20,35 @@
         <el-table-column
           min-width="12%"
           align="center"
-          prop="id"
-          label="id"
+          prop="bank_code"
+          label="bank_code"
         >
           <template slot-scope="{row}">
-            {{ row.id }}
+            {{ row.bank_code }}
           </template>
         </el-table-column>
 
         <el-table-column
           min-width="10%"
           align="center"
-          prop="action_admin_name"
-          label="action_admin_name"
+          prop="bank_name"
+          label="bank_name"
         >
           <template slot-scope="{row}">
-            {{row.action_admin_name}}
+            {{row.bank_name}}
           </template>
         </el-table-column>
 
         <el-table-column
           min-width="12%"
           align="center"
-          prop="title"
-          label="title"
+          prop="icon"
+          label="icon"
         >
           <template slot-scope="{row}">
-            {{ row.title }}
+            <img :src="row.icon" class="user-avatar">
           </template>
 
-        </el-table-column>
-
-
-
-        <el-table-column
-          min-width="10%"
-          align="center"
-          prop="action_admin_ip"
-          label="action_admin_ip"
-        >
-          <template slot-scope="{row}">
-            {{row.action_admin_ip}}
-          </template>
-        </el-table-column>
-
-        <el-table-column
-          min-width="10%"
-          align="center"
-          prop="description"
-          label="description"
-          :show-overflow-tooltip="true"
-        >
-          <template slot-scope="{row}">
-            {{row.description}}
-          </template>
-        </el-table-column>
-
-
-        <el-table-column
-          min-width="13%"
-          align="center"
-          prop="created_at"
-          label="提交时间"
-        >
-          <template slot-scope="{row}">
-            {{row.created_at}}
-          </template>
         </el-table-column>
 
       </el-table>
@@ -137,40 +78,11 @@
         listQuery: {
           value1:'',
           value2:'',
-          module:'',
-          action:'',
-          level:'',
           page: 1,
           limit: 10
         },
         total:0
       }
-    },
-
-    computed:{
-
-      modules() {
-        let res= this.$store.state.user.config['site_admin_log_model'].map(item=>{
-          let obj = {module:item.value,name:item.name}
-          return obj
-        })
-        res.splice(0,1)
-        return res
-      },
-      actions() {
-        let res= this.$store.state.user.config['site_admin_log_action'].map(item=>{
-          let obj = {action:item.value,name:item.name}
-          return obj
-        })
-        return res
-      },
-      levels() {
-        let res= this.$store.state.user.config['site_admin_log_level'].map(item=>{
-          let obj = {level:item.value,name:item.name}
-          return obj
-        })
-        return res
-      },
     },
 
     filters:{
@@ -220,27 +132,18 @@
           }
 
           let data = {
-            page: this.listQuery.page,
-            page_size: this.listQuery.limit,
-            module : this.listQuery.module!==''?this.listQuery.module:undefined,
-            action : this.listQuery.action!==''?this.listQuery.action:undefined,
-            level : this.listQuery.level!==''?this.listQuery.level:undefined,
-            start_time:this.listQuery.value1?parseInt(this.listQuery.value1/1000):undefined,
-            end_time:this.listQuery.value2?parseInt(this.listQuery.value2/1000+24*60*60-1):undefined,
             request_param:'GET'
           }
 
           this.search_loading = true;
-          this.$http.get(`${this.url}/site_admin_log`,data).then((resp)=>{
+          this.$http.get(`${this.url}/site_bank`,data).then((resp)=>{
 
             this.search_loading = false;
             if (resp.code === 200) {
               if (resp.data) {
                 this.member_list = resp.data;
-                this.total = resp.page.TotalSize
               }else {
                 this.member_list = [];
-                this.total = 0
               }
             }else{
               this.$message({

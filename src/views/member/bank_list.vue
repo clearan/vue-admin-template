@@ -3,6 +3,7 @@
   <div style="
     border: 1px solid #ebeef5;
     background-color: #fff;
+    box-shadow: 0 2px 10px 0 rgba(0,0,0,0.1);
     color: #303133;
     transition: .3s;
     min-height: 798px;"
@@ -14,13 +15,18 @@
         <timeselect @getTimeResult="get_time_result" @getTime="get_time"/>
 
         <div style="margin-top:10px">
-          <el-input v-model="listQuery.real_name" clearable placeholder="真实姓名" style="width: 150px;" class="filter-item" @keyup.enter.native="handleFilter" />
           <el-input v-model="listQuery.phone" clearable placeholder="电话" style="width: 150px;" class="filter-item" @keyup.enter.native="handleFilter" />
-          <el-select v-model="listQuery.status" placeholder="状态" clearable style="width: 90px;margin-left: 20px" class="filter-item">
+          <el-input v-model="listQuery.real_name" clearable placeholder="持卡人" style="width: 150px;" class="filter-item" @keyup.enter.native="handleFilter" />
+
+          <el-input v-model="listQuery.bank_number" clearable placeholder="银行卡号" style="width: 220px;" class="filter-item" @keyup.enter.native="handleFilter" />
+          <el-select filterable  v-model="listQuery.bank_id" placeholder="银行卡" clearable style="width: 170px" class="filter-item">
+            <el-option v-for="item in banks" :key="item.bank_id" :label="item.name" :value="item.bank_id" />
+          </el-select>
+          <el-select v-model="listQuery.status" placeholder="状态" clearable style="width: 90px" class="filter-item">
             <el-option v-for="item in states" :key="item.status" :label="item.name" :value="item.status" />
           </el-select>
 
-          <el-button  class="filter-item" type="primary" style="margin-left: 20px;" icon="el-icon-search" @click="handleFilter" :loading="search_loading">
+          <el-button  class="filter-item" type="primary" style="margin-left: 10px;" icon="el-icon-search" @click="handleFilter" :loading="search_loading">
             搜索
           </el-button>
         </div>
@@ -29,39 +35,35 @@
 
       <el-table
         border fit highlight-current-row style="width: 100%;"
-        :data="member_list"
+        :data="list"
         row-key="Id"
         :default-sort = "{prop: 'CreatedTime', order: 'descending'}"
       >
 
         <el-table-column
-          min-width="12%"
           align="center"
-          prop="id"
-          label="会员编号"
+          prop="ID"
+          label="ID"
         >
           <template slot-scope="{row}">
             {{ row.id }}
           </template>
-
         </el-table-column>
 
         <el-table-column
-          min-width="10%"
           align="center"
-          prop="real_name"
-          label="真实姓名"
+          prop="user_id"
+          label="用户ID"
         >
           <template slot-scope="{row}">
-            {{row.real_name}}
+            {{ row.user_id }}
           </template>
         </el-table-column>
 
         <el-table-column
-          min-width="10%"
           align="center"
           prop="username"
-          label="username"
+          label="用户名"
         >
           <template slot-scope="{row}">
             {{row.username}}
@@ -69,10 +71,19 @@
         </el-table-column>
 
         <el-table-column
-          min-width="13%"
+          align="center"
+          prop="real_name"
+          label="持卡人"
+        >
+          <template slot-scope="{row}">
+            {{row.real_name}}
+          </template>
+        </el-table-column>
+
+        <el-table-column
           align="center"
           prop="bank_name"
-          label="bank_name"
+          label="银行"
         >
           <template slot-scope="{row}">
             {{row.bank_name}}
@@ -80,10 +91,9 @@
         </el-table-column>
 
         <el-table-column
-          min-width="10%"
           align="center"
           prop="bank_number"
-          label="bank_number"
+          label="银行卡号"
         >
           <template slot-scope="{row}">
             {{row.bank_number}}
@@ -91,19 +101,20 @@
         </el-table-column>
 
         <el-table-column
-          min-width="13%"
           align="center"
-          prop="created_at"
-          label="提交时间"
+          prop="status"
+          label="状态"
         >
           <template slot-scope="{row}">
-            {{row.created_at}}
+            <el-switch
+              disabled
+              v-model="row.status"
+            >
+            </el-switch>
           </template>
         </el-table-column>
 
-
         <el-table-column
-          min-width="15%"
           align="center"
           prop="remark"
           label="备注"
@@ -114,7 +125,17 @@
         </el-table-column>
 
         <el-table-column
-          min-width="18%"
+          align="center"
+          prop="created_at"
+          label="创建时间"
+        >
+          <template slot-scope="{row}">
+            {{row.created_at}}
+          </template>
+        </el-table-column>
+
+
+        <el-table-column
           align="center"
           prop=""
           label="操作"
@@ -123,7 +144,7 @@
             <el-link
               type="primary"
               size="medium"
-              @click="user_edit(row)"
+              @click="bank_edit(row)"
             >
               编辑
             </el-link>
@@ -132,15 +153,15 @@
         </el-table-column>
 
       </el-table>
-      <el-dialog :visible.sync="dialogVisibleEdit" title="更新会员信息" :close-on-click-modal="false" :close-on-press-escape="false">
-        <el-form :model="edit" label-width="80px" ref="edit" :rules="editRules" label-position="left">
+      <el-dialog :visible.sync="dialogVisibleEdit" title="更新银行卡信息" :close-on-click-modal="false" :close-on-press-escape="false">
+        <el-form :model="edit" label-width="80px" ref="edit" label-position="left">
 
-          <el-form-item label="真实姓名" prop="real_name">
-            <el-input v-model="edit.real_name" placeholder="请输入真实姓名"/>
+          <el-form-item label="持卡人" >
+            <el-input v-model="edit.real_name" placeholder="请输入持卡人" readonly/>
           </el-form-item>
 
-          <el-form-item label="用户昵称" prop="nick_name">
-            <el-input v-model="edit.nick_name" placeholder="请输入用户昵称"/>
+          <el-form-item label="备注">
+            <el-input v-model="edit.remark" placeholder="请输入备注"/>
           </el-form-item>
 
           <el-form-item label="状态">
@@ -171,6 +192,7 @@
   import {formatMoney} from '@/utils/money'
   import qs from 'qs'
   import Timeselect from '@/components/Timeselect'
+  import store from "../../store";
   export default {
     components: { Pagination,Timeselect},
     data() {
@@ -186,7 +208,7 @@
       return {
         button:['','','','','','',''],
         search_loading:false,
-        member_list:[],
+        list:[],
         listQuery: {
           value1:'',
           value2:'',
@@ -194,25 +216,44 @@
           limit: 10,
           real_name: undefined,
           phone: undefined,
+          bank_id: undefined,
+          bank_number: undefined,
           status:undefined
         },
-        states : [
-          {status:1,name:'正常'},
-          {status:2,name:'禁用'},
-        ],
+        // states : [
+        //   {status:1,name:'正常'},
+        //   {status:2,name:'禁用'},
+        // ],
         edit:{
           real_name:'',
-          nick_name:'',
+          remark:'',
           status:''
         },
-        editRules: {
-          real_name: [{ required: true, trigger: 'blur', validator: validateName}],
-          nick_name: [{ required: true, trigger: 'blur', validator: validateName}],
-        },
+
         total:0,
         dialogVisibleEdit: false,
       }
     },
+
+    computed:{
+
+      states() {
+        let res= this.$store.state.user.config['user_bank_status'].map(item=>{
+          let obj = {status:item.value,name:item.name}
+          return obj
+        })
+        return res
+      },
+
+      banks() {
+        let res= this.$store.state.user.bank.map(item=>{
+          let obj = {bank_id:item.id,name:item.bank_name}
+          return obj
+        })
+        return res
+      }
+    },
+
     filters:{
       //时间戳
       formatDate(time) {
@@ -255,14 +296,15 @@
             this.listQuery.page =1
           }
           let data = {
-            status : this.listQuery.status!==''?this.listQuery.status:undefined,
             page: this.listQuery.page,
             page_size: this.listQuery.limit,
             start_time:this.listQuery.value1?parseInt(this.listQuery.value1/1000):undefined,
             end_time:this.listQuery.value2?parseInt(this.listQuery.value2/1000+24*60*60-1):undefined,
-            username: this.listQuery.username,
             phone: this.listQuery.phone,
-            admin_account: this.listQuery.admin_account,
+            bank_id: this.listQuery.bank_id,
+            bank_number: this.listQuery.bank_number,
+            real_name: this.listQuery.real_name,
+            status : this.listQuery.status!==''?this.listQuery.status:undefined,
             request_param:'GET'
           }
           this.search_loading = true;
@@ -270,10 +312,13 @@
             this.search_loading = false;
             if (resp.code === 200) {
               if (resp.data) {
-                this.member_list = resp.data;
+                resp.data.forEach(item => {
+                  item.status = item.status === 1
+                })
+                this.list = resp.data;
                 this.total = resp.page.TotalSize
               }else {
-                this.member_list = [];
+                this.list = [];
                 this.total = 0
               }
             }else{
@@ -292,18 +337,43 @@
           })
         }
       },
-      user_edit(row) {
-        console.log(row)
+      bank_edit(row) {
         this.edit.id = row.id;
         this.edit.real_name = row.real_name;
-        this.edit.nick_name = row.nick_name;
-        this.edit.status = row.status;
+        this.edit.remark = row.remark;
+        this.edit.status = row.status ? '1':'2';
         this.dialogVisibleEdit = true
         this.$nextTick(()=>{
-          this.$refs.edit.resetFields();//等弹窗里的form表单的dom渲染完在执行this.$refs.edit.resetFields()，去除验证
+          this.$refs.edit.clearValidate();
         });
       },
       submitEdit() {
+        let data = {
+          id:this.edit.id,
+          real_name:this.edit.real_name,
+          remark:this.edit.remark,
+          status:parseInt(this.edit.status),
+          request_param:'PUT'
+        }
+        this.$refs.edit.validate(valid => {
+          if (valid) {
+            this.$http.put(`${this.url}/user_bank`,qs.stringify(data)).then( resp => {
+              if (resp.code === 200) {
+                this.dialogVisibleEdit = false
+                this.getList();
+                this.$message({
+                  message:'更新成功',
+                  type:'success',
+                  center:true
+                })
+              } else {
+                this.msgTip(resp.msg)
+              }
+            })
+          } else {
+            console.log('submit error')
+          }
+        })
       },
       msgTip(name) {
         this.$message({
@@ -313,11 +383,14 @@
         })
       },
     },
+
     created() {
       if(this.$route.params.mem_id) {
         this.listQuery.id = this.$route.params.mem_id
       }
+      this.$store.dispatch('user/getBankList')
       this.getList()
-    }
+    },
+
   }
 </script>

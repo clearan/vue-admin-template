@@ -4,6 +4,7 @@
     background-color: #fff;
     color: #303133;
     transition: .3s;
+    box-shadow: 0 2px 10px 0 rgba(0,0,0,0.1);
     min-height: 798px;">
     <div class="app-container" >
 
@@ -814,7 +815,7 @@
           this.tableData = newData;
         } else {
           this.$message({
-            message:'您的登录已过期，请重新登录',
+            message:resp.msg,
             type:'error',
             center:true
           })
