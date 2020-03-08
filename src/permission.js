@@ -50,7 +50,7 @@ router.beforeEach( async(to, from, next) => {
       //获取site配置信息
       try{
         await store.dispatch('user/getConfig')
-      }catch (e) {
+      }catch (error) {
         Message.error(error || 'Has Error')
       }
 

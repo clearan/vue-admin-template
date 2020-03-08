@@ -348,7 +348,6 @@
         }
 
       };
-
       var oneValidUrl = (rule, value, callback) => {
         //url必须是配置里面有的
         var res = this.main_url.some((item) => {

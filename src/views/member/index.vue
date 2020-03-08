@@ -89,7 +89,7 @@
         </el-table-column>
 
         <el-table-column
-          min-width="90"
+          min-width="100"
           align="center"
           prop="created_at"
           label="注册时间"
@@ -169,19 +169,29 @@
           prop=""
           label="操作"
         >
+<!--          <template slot-scope="{row}">-->
+<!--            <el-link-->
+<!--              type="primary"-->
+<!--              size="medium"-->
+<!--              @click="user_edit(row)"-->
+<!--            >-->
+<!--              编辑-->
+<!--            </el-link>-->
+<!--          </template>-->
           <template slot-scope="{row}">
             <el-link
               type="primary"
               size="medium"
-              @click="user_edit(row)"
+              @click="user_detail(row)"
             >
-              编辑
+              更多
             </el-link>
           </template>
 
         </el-table-column>
 
       </el-table>
+
       <el-dialog :visible.sync="dialogVisibleEdit" title="更新会员信息" :close-on-click-modal="false" :close-on-press-escape="false">
         <el-form :model="edit" label-width="80px" ref="edit" :rules="editRules" label-position="left">
 
@@ -308,12 +318,9 @@
         this.getList()
       },
 
-      showDetail(row) {
-        let date = new Date().getTime();
-        LocalStorage.set("phone", row.Phone, date + 3*60*60*1000);
-        this.$router.push({path: '/member/dynamic_detail', query: {id: row.Id}})
+      user_detail(row) {
+        this.$router.push({path: '/member/member_detail',query: {id: row.id}})
       },
-
 
       checkTime() {
 

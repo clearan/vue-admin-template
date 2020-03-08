@@ -43,7 +43,7 @@
           min-width="12%"
           align="center"
           prop="id"
-          label="id"
+          label="ID"
         >
           <template slot-scope="{row}">
             {{ row.id }}
@@ -53,11 +53,11 @@
         <el-table-column
           min-width="10%"
           align="center"
-          prop="action_admin_name"
-          label="action_admin_name"
+          prop="module"
+          label="模块"
         >
           <template slot-scope="{row}">
-            {{row.action_admin_name}}
+            {{row.module}}
           </template>
         </el-table-column>
 
@@ -65,7 +65,7 @@
           min-width="12%"
           align="center"
           prop="title"
-          label="title"
+          label="标题"
         >
           <template slot-scope="{row}">
             {{ row.title }}
@@ -73,16 +73,20 @@
 
         </el-table-column>
 
-
-
         <el-table-column
-          min-width="10%"
+          min-width="12%"
           align="center"
-          prop="action_admin_ip"
-          label="action_admin_ip"
+          prop="action"
+          label="行为"
         >
           <template slot-scope="{row}">
-            {{row.action_admin_ip}}
+            <span size="medium">
+              {{
+              actions.filter(items=> {
+                return items.action===row.action
+              })[0].name
+              }}
+            </span>
           </template>
         </el-table-column>
 
@@ -90,7 +94,7 @@
           min-width="10%"
           align="center"
           prop="description"
-          label="description"
+          label="描述"
           :show-overflow-tooltip="true"
         >
           <template slot-scope="{row}">
@@ -98,12 +102,54 @@
           </template>
         </el-table-column>
 
+        <el-table-column
+          min-width="10%"
+          align="center"
+          prop="level"
+          label="日志等级"
+          :show-overflow-tooltip="true"
+        >
+          <template slot-scope="{row}">
+<!--            <el-tag v-if="row.level===1"  size="medium">普通</el-tag>-->
+<!--            <el-tag v-else-if="row.level===2" type="warning" size="medium">提醒</el-tag>-->
+<!--            <el-tag v-else  type="danger" size="medium">警告</el-tag>-->
+            <el-tag :type="row.level===1?'':row.level===2?'warning':'danger'">
+              {{
+              levels.filter(items=> {
+                return items.level===row.level
+              })[0].name
+              }}
+            </el-tag>
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          min-width="10%"
+          align="center"
+          prop="action_admin_name"
+          label="管理员账户"
+        >
+          <template slot-scope="{row}">
+            {{row.action_admin_name}}
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          min-width="10%"
+          align="center"
+          prop="action_admin_ip"
+          label="操作者ip"
+        >
+          <template slot-scope="{row}">
+            {{row.action_admin_ip}}
+          </template>
+        </el-table-column>
 
         <el-table-column
           min-width="13%"
           align="center"
           prop="created_at"
-          label="提交时间"
+          label="创建时间"
         >
           <template slot-scope="{row}">
             {{row.created_at}}

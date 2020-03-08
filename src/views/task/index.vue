@@ -191,11 +191,20 @@
           label="状态"
         >
           <template slot-scope="{row}">
-            <el-tag v-if="row.status===1" type="warning" size="medium">待发布</el-tag>
-            <el-tag v-else-if="row.status===2" type="info" size="medium">待审核</el-tag>
-            <el-tag v-else-if="row.status===3" type="success" size="medium">已通过</el-tag>
-            <el-tag v-else-if="row.status===4" type="danger" size="medium">已拒绝</el-tag>
-            <el-tag v-else type="primary" size="medium">已结束</el-tag>
+<!--            <el-tag v-if="row.status===1" type="warning" size="medium">待发布</el-tag>-->
+<!--            <el-tag v-else-if="row.status===2" type="info" size="medium">待审核</el-tag>-->
+<!--            <el-tag v-else-if="row.status===3" type="success" size="medium">已通过</el-tag>-->
+<!--            <el-tag v-else-if="row.status===4" type="danger" size="medium">已拒绝</el-tag>-->
+<!--            <el-tag v-else type="primary" size="medium">已结束</el-tag>-->
+            <el-tag :type="row.status===1?'':row.status===2?'info':row.status===3?'success':row.status===4?'danger':''">
+              {{
+              states.filter(items=> {
+                return items.status===row.status
+              })[0].name
+              }}
+
+            </el-tag>
+
           </template>
         </el-table-column>
 

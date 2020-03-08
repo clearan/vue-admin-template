@@ -116,10 +116,15 @@
           label="状态"
         >
           <template slot-scope="{row}">
-            <el-tag v-if="row.status===1"  size="medium">提现中</el-tag>
-            <el-tag v-else-if="row.status===2"  size="medium">审核中</el-tag>
-            <el-tag v-else-if="row.status===3"  size="medium">成功</el-tag>
-            <el-tag v-else  size="medium">拒绝</el-tag>
+<!--            <el-tag v-if="row.status===1"  size="medium">提现中</el-tag>-->
+<!--            <el-tag v-else-if="row.status===2"  size="medium">审核中</el-tag>-->
+<!--            <el-tag v-else-if="row.status===3"  size="medium">成功</el-tag>-->
+<!--            <el-tag v-else  size="medium">拒绝</el-tag>-->
+            {{
+            states.filter(items=> {
+              return items.status===row.status
+            })[0].name
+            }}
           </template>
         </el-table-column>
 
