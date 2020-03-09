@@ -14,8 +14,8 @@
         <el-tab-pane label="基础信息" name="first">
           <el-table
             border fit highlight-current-row
-            :data="data"
-            style="width: 100%">
+            :data="basic"
+            style="width: 100%;margin: 20px 0">
             <el-table-column
               align="center"
               label="ID"
@@ -51,14 +51,6 @@
               </template>
             </el-table-column>
 
-            <el-table-column
-              align="center"
-              label="电话"
-            >
-              <template slot-scope="{row}">
-                {{row.phone}}
-              </template>
-            </el-table-column>
 
             <el-table-column
               align="center"
@@ -92,8 +84,8 @@
         <el-tab-pane label="任务信息" name="second">
           <el-table
             border fit highlight-current-row
-            :data="data1"
-            style="width: 60%">
+            :data="mission"
+            style="width: 60%;margin: 20px 0">
             <el-table-column
               align="center"
               width="100%"
@@ -132,8 +124,8 @@
         <el-tab-pane label="佣金" name="third">
           <el-table
             border fit highlight-current-row
-            :data="data2"
-            style="width: 60%">
+            :data="money"
+            style="width: 60%;margin: 20px 0">
             <el-table-column
               align="center"
               type="index"
@@ -165,8 +157,8 @@
         <el-tab-pane label="钱包" name="fourth">
           <el-table
             border fit highlight-current-row
-            :data="data3"
-            style="width: 60%">
+            :data="bag"
+            style="width: 60%;margin: 20px 0">
             <el-table-column
               align="center"
               type="index"
@@ -198,15 +190,16 @@
         <el-tab-pane label="解/封禁" name="five">
           <el-table
             border fit highlight-current-row
-            :data="data4"
-            style="width: 60%">
+            :data="conf"
+            style="width: 60%;margin: 20px 0">
             <el-table-column
               align="center"
               prop="date"
               label="发任务"
               min-width="35%">
               <template slot-scope="{row}">
-                {{row.a}}
+                <span v-if="row.a===1">正常</span>
+                <span v-else>{{row.a}}</span>
               </template>
             </el-table-column>
 
@@ -215,16 +208,8 @@
               label="接任务"
               min-width="35%">
               <template slot-scope="{row}">
-                {{row.b}}
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              align="center"
-              label="发消息"
-              min-width="35%">
-              <template slot-scope="{row}">
-                {{row.a}}
+                <span v-if="row.b===1">正常</span>
+                <span v-else>{{row.b}}</span>
               </template>
             </el-table-column>
 
@@ -233,7 +218,18 @@
               label="提现"
               min-width="35%">
               <template slot-scope="{row}">
-                {{row.a}}
+                <span v-if="row.c===1">正常</span>
+                <span v-else>{{row.c}}</span>
+              </template>
+            </el-table-column>
+
+            <el-table-column
+              align="center"
+              label="发消息"
+              min-width="35%">
+              <template slot-scope="{row}">
+                <span v-if="row.d===1">正常</span>
+                <span v-else>{{row.d}}</span>
               </template>
             </el-table-column>
 
@@ -242,7 +238,7 @@
               label="登录"
               min-width="35%">
               <template slot-scope="{row}">
-                {{row.a}}
+                {{row.e}}
               </template>
             </el-table-column>
 
@@ -251,7 +247,13 @@
               label="操作"
               min-width="35%">
               <template slot-scope="{row}">
-                更多
+                <el-link
+                  type="primary"
+                  size="small"
+                  @click="handleEdit(row)"
+                >
+                  更多
+                </el-link>
               </template>
             </el-table-column>
 
@@ -259,15 +261,103 @@
         </el-tab-pane>
       </el-tabs>
 
+      <el-dialog :visible.sync="dialogVisibleEdit" title="编辑" :close-on-click-modal="false" :close-on-press-escape="false">
+        <el-form  label-width="90px" ref="edit"  label-position="left" :inline="true">
 
+          <el-form-item label="禁止发任务" >
+            <el-select v-model="select.publish_status" placeholder="请选择">
+              <el-option
+                v-for="item in states"
+                :key="item.val"
+                :label="item.name"
+                :value="item.val"
+              >
+              </el-option>
+            </el-select>
+          </el-form-item>
 
+          <el-form-item label="禁止接任务">
+            <el-select v-model="select.subscribe_status" placeholder="请选择">
+              <el-option
+                v-for="item in states"
+                :key="item.val"
+                :label="item.name"
+                :value="item.val"
+              >
+              </el-option>
+            </el-select>
+          </el-form-item>
 
+          <el-form-item label="禁止提现">
+            <el-select v-model="select.withdraw_status" placeholder="请选择">
+              <el-option
+                v-for="item in states"
+                :key="item.val"
+                :label="item.name"
+                :value="item.val"
+              >
+              </el-option>
+            </el-select>
+          </el-form-item>
 
+          <el-form-item label="禁止发消息">
+            <el-select v-model="select.message_status" placeholder="请选择">
+              <el-option
+                v-for="item in states"
+                :key="item.val"
+                :label="item.name"
+                :value="item.val"
+              >
+              </el-option>
+            </el-select>
+          </el-form-item>
 
+          <el-form-item label="禁止登录">
+            <el-select v-model="select.login_status" placeholder="请选择">
+              <el-option
+                v-for="item in states"
+                :key="item.val"
+                :label="item.name"
+                :value="item.val"
+              >
+              </el-option>
+            </el-select>
+          </el-form-item>
 
+        </el-form>
+        <el-form>
+          <el-form-item label="备注:">
+            <el-input
+              v-model="remark"
+              :autosize="{ minRows: 2, maxRows: 4}"
+              type="textarea"
+              maxLength="70"
+              style="width: 40%;"
+            />
+          </el-form-item>
 
+          <el-form-item label="凭据:">
+            <el-upload
+              class="avatar-uploader"
+              action="#"
+              :http-request="httpRequest"
+              :show-file-list="false"
+              :before-upload="beforeAvatarUpload"
+              >
+              <img v-if="imageUrl" :src="imageUrl" class="avatar">
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
 
+          </el-form-item>
 
+          <el-form-item>
+            <div style="text-align:right;">
+              <el-button type="danger" @click="dialogVisibleEdit=false">取消</el-button>
+              <el-button type="primary" @click="submitEdit">确定</el-button>
+            </div>
+          </el-form-item>
+        </el-form>
+      </el-dialog>
 
     </div>
 
@@ -275,46 +365,60 @@
 </template>
 
 <script>
+
     import Pagination from '@/components/Pagination'
     import {LocalStorage} from '@/utils/storage'
     import {formatMoney} from '@/utils/money'
     import qs from 'qs'
-
     export default {
         components: { Pagination },
         data() {
             return {
-                activeName:'first',
-
-                data:[],
-                data1:[
-                  {a:10,b:10,c:'-'},
-                  {a:20,b:20,c:20},
-                  {a:30,b:30,c:30},
+                activeName:'five',
+                remark:'',
+                imageUrl: '',
+                image: '',
+                basic:[
+                  {user_id:'',username:'',user_parent_id:'',phone:'',user_childrer_count:'',login_count:'',created_at:''},
                 ],
-                data2:[
-                  {a:10,b:10}
+                mission:[
+                  {a:'',b:'',c:''},
+                  {a:'',b:'',c:''},
+                  {a:'',b:'',c:''},
                 ],
-                data3:[
-                  {a:10,b:10},
-                  {a:50,b:60},
+                money:[
+                  {a:'',b:''}
                 ],
-                data4:[
-                  {a:10,b:10},
-                  {a:50,b:60},
+                bag:[
+                  {a:'',b:''},
+                  {a:'',b:''},
                 ],
-                detail:{
-                    mch_phone_num:'11111111111',
-                    context:'',
-                    total:321321,
-                    send:323,
-                    suc:232323,
-                    fail:323232,
-                    state:undefined
+                conf:[
+                  {a:'',b:'',c:'',d:'',e:''},
+                ],
+                select:{
+                  publish_status:'',
+                  subscribe_status:'',
+                  withdraw_status:'',
+                  message_status:'',
+                  login_status:''
                 },
+                dialogVisibleEdit:false,
                 id:undefined,
-                mch_id:undefined,
             }
+        },
+
+        computed:{
+
+          states() {
+            let res= this.$store.state.user.config['user_action_status'].map(item=>{
+              let obj = {val:item.value,name:item.name}
+              return obj
+            })
+            return res
+          },
+
+
         },
 
         filters:{
@@ -327,29 +431,107 @@
 
         methods:{
 
-          indexMethod(index){
-            switch (index) {
-              case 0:
-                return '发布';
-              case 1:
-                return '进行中';
-              default:
-                return '结束'
-            }
-          },
-          indexMethod2(index){
-            if (index ===0) return '佣金'
-          },
+            beforeAvatarUpload (file) {
+              const isJPG = file.type === 'image/jpeg' || 'png'
+              const isLt2M = file.size / 1024 / 1024 < 1
+              if (!isJPG) {
+                this.$message.error('上传头像图片只能是 JPG/PNG 格式!')
+              }
+              if (!isLt2M) {
+                this.$message.error('上传头像图片大小不能超过 1MB!')
+              }
+              return isJPG && isLt2M
+            },
 
-          indexMethod3(index){
-            return index ===1 ?'提现':'收益'
-          },
+            httpRequest (data) {
+              let _this = this
+              let rd = new FileReader() // 创建文件读取对象
+              let file = data.file
+              this.image = file
+              rd.readAsDataURL(file) // 文件读取装换为base64类型
+              rd.onloadend = function (e) {
+                _this.imageUrl = this.result // this指向当前方法onloadend的作用域
+              }
+            },
+
+
+            handleEdit(row){
+              if (!LocalStorage.get('bp').includes('member/member_ban')) {
+                  this.msgTip('您没有此权限')
+                  return
+              }
+
+              this.select.login_status=''
+              this.select.message_status=''
+              this.select.publish_status=''
+              this.select.subscribe_status=''
+              this.select.withdraw_status=''
+              this.dialogVisibleEdit = true
+            },
+
+            submitEdit() {
+              let flag = false
+              for(let i in this.select) {
+                if (this.select[i] === '') {
+                  flag = true;
+                  break;
+                }
+              }
+              console.log(this.select)
+              if (flag) {
+                this.msgTip('请进行下拉选择')
+                return
+              }
+
+              let data = new FormData()
+              data.append('user_id',this.id)
+              data.append('login_status',this.select.login_status)
+              data.append('message_status',this.select.message_status)
+              data.append('publish_status',this.select.publish_status)
+              data.append('subscribe_status',this.select.subscribe_status)
+              data.append('withdraw_status',this.select.withdraw_status)
+              data.append('remark',this.remark)
+              data.append('image',this.image)
+
+              this.$http.patch(`${this.url}/user`,data).then( resp => {
+                if (resp.code === 200) {
+                  this.$message({
+                    message:'成功',
+                    type:'success',
+                    center:true
+                  });
+                  setTimeout(() => {
+                    window.location.reload()
+                  },1000)
+                }else{
+                  this.msgTip(resp.msg)
+                }
+              })
+            },
+
+            indexMethod(index){
+              switch (index) {
+                case 0:
+                  return '发布';
+                case 1:
+                  return '进行中';
+                default:
+                  return '结束'
+              }
+            },
+
+            indexMethod2(index){
+              if (index ===0) return '佣金'
+            },
+
+            indexMethod3(index){
+              return index ===1 ?'提现':'收益'
+            },
 
             getList() {
 
                 if (this.id === undefined || this.id === '') {
                     this.msgTip('id无效');
-                    this.detail.total = 0;
                     return;
                 }
 
@@ -359,57 +541,49 @@
 
                 this.$http.get(`${this.url}/user_info`,data).then(resp=>{
 
-                    // if (resp.code === 200) {
-                    //     this.mch_id = resp.ret_data.data_list[0].mch_id
-                    //     this.detail.mch_phone_num = resp.ret_data.data_list[0].mch_phone_num
-                    //     this.detail.context = resp.ret_data.data_list[0].context
-                    //     this.detail.state = resp.ret_data.data_list[0].state
-                    //
-                    //     this.detail.total = resp.ret_data.data_list[0].target_num
-                    //     this.detail.send = resp.ret_data.data_list[0].successful+resp.ret_data.data_list[0].failure
-                    //     this.detail.suc = resp.ret_data.data_list[0].successful
-                    //     this.detail.fail = resp.ret_data.data_list[0].failure
-                    // } else {
-                    //     this.$message({
-                    //         message:resp.msg,
-                    //         type:'error',
-                    //         center:true
-                    //     })
-                    // }
-                })
-            },
+                    if (resp.code === 200) {
+                      if (resp.data.length>0){
+                        this.basic[0].user_id = resp.data[0].user_id
+                        this.basic[0].username = resp.data[0].username
+                        this.basic[0].user_parent_id = resp.data[0].user_parent_id
+                        this.basic[0].phone = resp.data[0].phone
+                        this.basic[0].user_childrer_count = resp.data[0].user_childrer_count
+                        this.basic[0].login_count = resp.data[0].login_count
+                        this.basic[0].created_at = resp.data[0].created_at
 
-            onSubmit() {
+                        this.mission[0].a = resp.data[0].task_pub_count
+                        this.mission[0].b = resp.data[0].task_pub_childrer_count
+                        this.mission[0].c = '-'
+                        this.mission[1].a = resp.data[0].task_pub_wait_count
+                        this.mission[1].b = resp.data[0].task_pub_wait_childrer_count
+                        this.mission[1].c = resp.data[0].task_sub_wait_count
+                        this.mission[2].a = resp.data[0].task_pub_end_count
+                        this.mission[2].b = resp.data[0].task_pub_end_childrer_count
+                        this.mission[2].c = resp.data[0].task_sub_end_count
 
-                if (this.detail.context.replace(/\s/g,"").length === 0) {
-                    this.msgTip('短信内容不能为空')
-                    return false
-                }
+                        this.money[0].a = resp.data[0].comission_task_sum
+                        this.money[0].b = resp.data[0].comission_promotion_sum
 
-                let data = {
-                    self_id: LocalStorage.get('self_id'),
-                    idempotent: new Date().getTime(),
-                    sess: LocalStorage.get('sess'),
-                    id:this.id,
-                    context:this.detail.context
-                };
-                this.$http.post(`${this.url}/mod_mission`,qs.stringify(data)).then((resp)=>{
-                    if (resp.ret_code === 0) {
+                        this.bag[0].a = resp.data[0].deposit_task_sum
+                        this.bag[0].b = resp.data[0].deposit_master_sum
+                        this.bag[1].a = resp.data[0].withdraw_task_sum
+                        this.bag[1].b = resp.data[0].withdraw_master_sum
+
+                        this.conf[0].a =resp.data[0].publish_status === 1 ? '正常' :this.compute_time(resp.data[0].publish_status-resp.time,'a')
+                        this.conf[0].b =resp.data[0].subscribe_status === 1 ? '正常' :this.compute_time(resp.data[0].subscribe_status-resp.time,'b')
+                        this.conf[0].c =resp.data[0].withdraw_status === 1 ? '正常' :this.compute_time(resp.data[0].withdraw_status-resp.time,'c')
+                        this.conf[0].d =resp.data[0].message_status === 1 ? '正常' :this.compute_time(resp.data[0].message_status-resp.time,'d')
+                        this.conf[0].e =resp.data[0].login_status === 1 ? '正常' :this.compute_time(1583769340-resp.time,'e')
+                      }else{
+                        this.basic = []
+                      }
+
+                    } else {
                         this.$message({
-                            message:'修改成功',
-                            type:'success',
+                            message:resp.msg,
+                            type:'error',
                             center:true
                         })
-                        setTimeout(()=>{
-                            window.location.reload();
-                        },1000)
-                    }else{
-                        this.msgTip(resp.ret_msg)
-                    }
-                }).catch((error)=>{
-                    if (error !== 'loginErr') {
-                        console.log(error);
-                        this.msgTip('系统繁忙，请稍后重试')
                     }
                 })
             },
@@ -421,6 +595,23 @@
                     center:true
                 })
             },
+
+            compute_time(rightTime,type) {
+                setInterval(() => {
+                  if (rightTime > 0) {
+                      rightTime--
+                      
+                      let dd = Math.floor(rightTime  / 60 / 60 / 24);
+                      let hh = Math.floor((rightTime  / 60 / 60) % 24);
+                      let mm = Math.floor((rightTime  / 60) % 60);
+                      let ss = Math.floor((rightTime ) % 60);
+                      this.conf[0][type] = dd + "天" + hh + "时" + mm + "分" + ss + "秒"
+                  } else {
+                      this.conf[0][type] = "正常"
+                  }
+                }, 1000);
+            },
+
         },
 
         created() {
@@ -431,10 +622,30 @@
 
 </script>
 
-<style scoped>
-/deep/ .el-form-item{
-  margin: 0 20px;
-}
+<style >
+  .avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .avatar-uploader .el-upload:hover {
+    border-color: #409EFF;
+  }
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 178px;
+    height: 178px;
+    line-height: 178px;
+    text-align: center;
+  }
+  .avatar {
+    width: 178px;
+    height: 178px;
+    display: block;
+  }
 </style>
 
 

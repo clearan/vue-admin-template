@@ -18,6 +18,7 @@ var main_url = [
   //{value:'member/member_list',desc:'会员列表'},
   {value:'member/index',desc:'会员列表'},
   {value:'member/member_detail',desc:'会员详情'},
+  {value:'member/member_ban',desc:'会员封禁'},
   {value:'member/deposit_list',desc:'存款列表'},
   {value:'member/withdraw_list',desc:'取款列表'},
   {value:'member/bank_list',desc:'银行卡列表'},

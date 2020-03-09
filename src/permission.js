@@ -217,7 +217,6 @@ router.beforeEach( async(to, from, next) => {
 
       //getRouter = LocalStorage.get('router') //拿到路由
       getRouter =constantRoutes //拿到最新的路由
-      //console.log(getRouter)
       routerGo(to, next)
     }
   } else {

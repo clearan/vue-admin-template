@@ -41,6 +41,25 @@ export const get = (url, params) => {
               window.location.href=process.env.VUE_APP_PUSH_URL
             }
           })
+        }else if (resp.data.code === 243) {
+          var clearTime = 3
+          var time = setInterval(() => {
+            clearTime--
+            if (clearTime === 1) {
+              clearInterval(time)
+            }
+            a.message = '您尚无此权限，'+clearTime+'秒后跳转至登录页面'
+          }, 1000)
+
+          var a = Message({
+            message:'您尚无此权限，3秒后跳转至登录页面',
+            type:'error',
+            center:true,
+            onClose:action=>{
+              localStorage.clear();
+              window.location.href=process.env.VUE_APP_PUSH_URL
+            }
+          })
         }else{
           resolve(resp.data)
         }
