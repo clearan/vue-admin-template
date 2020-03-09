@@ -432,7 +432,8 @@
         methods:{
 
             beforeAvatarUpload (file) {
-              const isJPG = file.type === 'image/jpeg' || 'png'
+
+              const isJPG = file.type === 'image/jpeg' || file.type === 'image/png'
               const isLt2M = file.size / 1024 / 1024 < 1
               if (!isJPG) {
                 this.$message.error('上传头像图片只能是 JPG/PNG 格式!')
@@ -477,7 +478,7 @@
                   break;
                 }
               }
-              console.log(this.select)
+
               if (flag) {
                 this.msgTip('请进行下拉选择')
                 return
@@ -573,7 +574,7 @@
                         this.conf[0].b =resp.data[0].subscribe_status === 1 ? '正常' :this.compute_time(resp.data[0].subscribe_status-resp.time,'b')
                         this.conf[0].c =resp.data[0].withdraw_status === 1 ? '正常' :this.compute_time(resp.data[0].withdraw_status-resp.time,'c')
                         this.conf[0].d =resp.data[0].message_status === 1 ? '正常' :this.compute_time(resp.data[0].message_status-resp.time,'d')
-                        this.conf[0].e =resp.data[0].login_status === 1 ? '正常' :this.compute_time(1583769340-resp.time,'e')
+                        this.conf[0].e =resp.data[0].login_status === 1 ? '正常' :this.compute_time(1583730500-resp.time,'e')
                       }else{
                         this.basic = []
                       }
@@ -600,11 +601,13 @@
                 setInterval(() => {
                   if (rightTime > 0) {
                       rightTime--
-                      
-                      let dd = Math.floor(rightTime  / 60 / 60 / 24);
-                      let hh = Math.floor((rightTime  / 60 / 60) % 24);
-                      let mm = Math.floor((rightTime  / 60) % 60);
-                      let ss = Math.floor((rightTime ) % 60);
+                      if (rightTime === 1) {
+                        clearInterval(rightTime)
+                      }
+                      let dd = Math.floor(rightTime / 60 / 60 / 24);
+                      let hh = Math.floor((rightTime / 60 / 60) % 24);
+                      let mm = Math.floor((rightTime / 60) % 60);
+                      let ss = Math.floor(rightTime % 60);
                       this.conf[0][type] = dd + "天" + hh + "时" + mm + "分" + ss + "秒"
                   } else {
                       this.conf[0][type] = "正常"
