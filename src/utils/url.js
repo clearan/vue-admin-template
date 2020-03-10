@@ -14,6 +14,13 @@ var main_url = [
   {value:'system/user_edit',desc:'用户编辑'},
   {value:'system/log_list',desc:'日志列表'},
   {value:'system/bank_list',desc:'银行卡列表'},
+  {value:'system/configType_list',desc:'配置类型'},
+  {value:'system/configType_add',desc:'添加配置类型'},
+  {value:'system/configType_edit',desc:'编辑配置类型'},
+  {value:'system/configType_detail',desc:'配置类型详情'},
+  {value:'system/config_list',desc:'配置列表'},
+  {value:'system/config_add',desc:'添加配置'},
+  {value:'system/config_edit',desc:'编辑配置'},
   {value:'member',desc:'会员管理'},
   //{value:'member/member_list',desc:'会员列表'},
   {value:'member/index',desc:'会员列表'},
@@ -34,6 +41,7 @@ var main_url = [
   {value:'test',desc:'测试管理'},
   {value:'test/index',desc:'aa'},
   {value:'test/test',desc:'bb'},
+  {value:'test/test1',desc:'cc'},
 ]
 
 // [

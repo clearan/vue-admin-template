@@ -64,7 +64,7 @@ const actions = {
 
   getConfig({ commit }) {
     return new Promise((resolve, reject) => {
-      get(`${Vue.prototype.url}/site_config`).then(response => {
+      get(`${Vue.prototype.url}/config`).then(response => {
         if (response.code === 200) {
           commit('SET_Config', response.data)
           resolve(response.data)

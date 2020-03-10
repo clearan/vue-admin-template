@@ -96,6 +96,7 @@
           prop="description"
           label="描述"
           :show-overflow-tooltip="true"
+          width="90"
         >
           <template slot-scope="{row}">
             {{row.description}}
@@ -215,6 +216,7 @@
           let obj = {level:item.value,name:item.name}
           return obj
         })
+        console.log(res)
         return res
       },
     },
@@ -324,6 +326,10 @@
   }
 
 </script>
+
+<style>
+  .el-tooltip__popper{max-width:20%}
+</style>
 
 
 

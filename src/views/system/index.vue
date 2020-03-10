@@ -518,7 +518,6 @@
       },
 
       submitAdd() {
-
         let data = {
           parent_id:this.auth.value,
           permission_name:this.auth.permission_name,

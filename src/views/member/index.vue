@@ -169,22 +169,28 @@
           prop=""
           label="操作"
         >
-<!--          <template slot-scope="{row}">-->
-<!--            <el-link-->
-<!--              type="primary"-->
-<!--              size="medium"-->
-<!--              @click="user_edit(row)"-->
-<!--            >-->
-<!--              编辑-->
-<!--            </el-link>-->
-<!--          </template>-->
+
           <template slot-scope="{row}">
+            <el-link
+              type="primary"
+              size="medium"
+              @click="handel_money(row,1)"
+            >
+              加款
+            </el-link>
+            <el-link
+              type="primary"
+              size="medium"
+              @click="handel_money(row,2)"
+            >
+              扣款
+            </el-link>
             <el-link
               type="primary"
               size="medium"
               @click="user_detail(row)"
             >
-              更多
+              详情
             </el-link>
           </template>
 
@@ -212,6 +218,43 @@
             <div style="text-align:right;">
               <el-button type="danger" @click="dialogVisibleEdit=false">取消</el-button>
               <el-button type="primary" @click="submitEdit">确定</el-button>
+            </div>
+          </el-form-item>
+
+        </el-form>
+
+      </el-dialog>
+      <el-dialog :visible.sync="dialogVisibleMoney" :title="money.title" :close-on-click-modal="false" :close-on-press-escape="false">
+        <el-form label-width="80px" :model="money" ref="edit" label-position="left">
+
+          <el-form-item label="真实姓名">
+            <el-input v-model="money.real_name" readonly/>
+          </el-form-item>
+
+          <el-form-item label="用户名">
+            <el-input v-model="money.username" readonly/>
+          </el-form-item>
+
+          <el-form-item label="钱包类型">
+            <el-select v-model="money.type" placeholder="请选择">
+              <el-option
+                v-for="item in types"
+                :key="item.type"
+                :label="item.name"
+                :value="item.type"
+              >
+              </el-option>
+            </el-select>
+          </el-form-item>
+
+          <el-form-item label="调整金额" >
+            <el-input v-model="money.money" maxlength="15"/>
+          </el-form-item>
+
+          <el-form-item>
+            <div style="text-align:right;">
+              <el-button type="danger" @click="dialogVisibleMoney=false">取消</el-button>
+              <el-button type="primary" @click="submitMoney">确定</el-button>
             </div>
           </el-form-item>
 
@@ -248,6 +291,15 @@
         button:['','','','','','',''],
         search_loading:false,
         list:[],
+        money:{
+          user_id:'',
+          real_name:'',
+          username:'',
+          money:'',
+          type:'',
+          title:'',
+          url:'',
+        },
         listQuery: {
           value1:'',
           value2:'',
@@ -274,6 +326,7 @@
         },
         total:0,
         dialogVisibleEdit: false,
+        dialogVisibleMoney: false,
       }
     },
 
@@ -282,6 +335,14 @@
       states() {
         let res= this.$store.state.user.config['user_status'].map(item=>{
           let obj = {status:item.value,name:item.name}
+          return obj
+        })
+        return res
+      },
+
+      types() {
+        let res= this.$store.state.user.config['user_wallet_type'].map(item=>{
+          let obj = {type:item.value,name:item.name}
           return obj
         })
         return res
@@ -300,7 +361,92 @@
       }
     },
 
+    watch :{
+      'money.money':function (newvalue,oldvalue) {
+
+        var newvalue_=(newvalue.indexOf('.00')>0)?newvalue.replace('.00' ,''):newvalue; //禁止ie8,9自动添加.00的小数点
+
+        if ((isNaN(parseFloat(newvalue_.replace(/,/ig,''))))){ //如果当前输入的不是数字就停止执行
+          this.money.money='';  //防止不是数字是input出现NaN提示
+          return false;
+        }
+
+        if ( /\./i.test(newvalue_) ){ //判断处理含有.的情况下
+          if (/\.\d{3}$/.test(newvalue_) || /\.\d*\./.test(newvalue_)){
+            this.money.money=oldvalue; //限制只能输入2位小数点
+          } else{
+            this.money.money=newvalue_.replace(/[^\d\.\,]/ig,'') //开始输入小数点之后，只能输入数字
+          }
+        } else{
+          this.money.money=((parseFloat(newvalue_.replace(/,/ig,'')).toLocaleString()).toString()).replace('.00' ,'');
+        }
+      }
+    },
+
     methods:{
+
+      handel_money(row,val) {
+        this.money.user_id = row.id
+        this.money.title = val === 1 ? '加款' : '扣款'
+        this.money.url = val === 1 ? 'user_deposit' : 'user_withdraw'
+        this.money.real_name = row.real_name
+        this.money.username = row.username
+        this.money.type = ''
+        this.money.money = ''
+        this.dialogVisibleMoney = true
+      },
+
+      submitMoney() {
+        if(this.money.type === '') {
+          this.msgTip('请选择钱包类型')
+          return
+        }
+
+        let balance = ''
+        if (this.money.money.includes('.')) {
+          let tmp = this.money.money.replace(/[,]/g,'')
+          if (tmp.split('.')[1].length === 0) {
+            balance = tmp.replace(/[.]/g,'')*100
+          }
+
+          if (tmp.split('.')[1].length === 1) {
+            balance = tmp.replace(/[.]/g,'')*10
+          }
+
+          if (tmp.split('.')[1].length === 2) {
+            balance = tmp.replace(/[.]/g,'')
+          }
+
+        } else{
+          balance = this.money.money.replace(/[,]|[.]/g,'')*100
+        }
+
+        if (balance == 0) {
+          this.msgTip('调整金额不能为空')
+          return
+        }
+
+        let data = {
+          user_id: this.money.user_id,
+          wallet: String(this.money.type),
+          money: parseFloat(this.money.money.replace(/[,]/g,'')),
+        }
+
+        this.$http.patch(`${this.url}/${this.money.url}`,qs.stringify(data)).then(resp => {
+
+          if (resp.code === 200) {
+            this.getList()
+            this.$message({
+              message:'成功',
+              type:'success',
+              center:true
+            });
+          }else{
+            this.msgTip(resp.msg)
+          }
+        })
+
+      },
 
       get_time_result(obj) {
         this.listQuery.value1 = obj.value1

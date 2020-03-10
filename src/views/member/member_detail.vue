@@ -574,7 +574,7 @@
                         this.conf[0].b =resp.data[0].subscribe_status === 1 ? '正常' :this.compute_time(resp.data[0].subscribe_status-resp.time,'b')
                         this.conf[0].c =resp.data[0].withdraw_status === 1 ? '正常' :this.compute_time(resp.data[0].withdraw_status-resp.time,'c')
                         this.conf[0].d =resp.data[0].message_status === 1 ? '正常' :this.compute_time(resp.data[0].message_status-resp.time,'d')
-                        this.conf[0].e =resp.data[0].login_status === 1 ? '正常' :this.compute_time(1583730500-resp.time,'e')
+                        this.conf[0].e =resp.data[0].login_status === 1 ? '正常' :this.compute_time(resp.data[0].login_status-resp.time,'e')
                       }else{
                         this.basic = []
                       }
