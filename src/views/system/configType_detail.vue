@@ -11,7 +11,7 @@
 
       <div class="filter-container">
         <el-button   type="primary" icon="el-icon-edit" style="margin-bottom: 15px" @click="editConf" v-if="!flag_btn">
-          更新
+          编辑
         </el-button>
 
         <el-button
@@ -48,7 +48,7 @@
           min-width="25%"
           align="center"
           prop="key"
-          label="键(key)"
+          label="配置名称"
         >
           <template slot-scope="{row}">
             {{row.option_name}}
@@ -59,7 +59,7 @@
           min-width="25%"
           align="center"
           prop="value"
-          label="值(value)"
+          label="配置参数"
         >
           <template slot-scope="{row}">
             <template v-if="row.is_edit">

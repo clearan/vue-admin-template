@@ -28,11 +28,10 @@
           label="id"
         >
           <template slot-scope="{row}">
-            <el-link type="primary" @click="confDetail(row)">
-              {{ row.id }}
-            </el-link>
+            {{ row.id }}
           </template>
         </el-table-column>
+
 
         <el-table-column
           align="center"
@@ -69,6 +68,17 @@
         >
           <template slot-scope="{row}">
             {{ row.created_at }}
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          align="center"
+          label="操作"
+        >
+          <template slot-scope="{row}">
+            <el-link type="primary" @click="confDetail(row)">
+              详情
+            </el-link>
           </template>
         </el-table-column>
 

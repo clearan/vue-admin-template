@@ -22,7 +22,7 @@
           <el-button  class="filter-item" type="primary" style="margin-left: 20px;" icon="el-icon-search" @click="handleFilter" :loading="search_loading">
             搜索
           </el-button>
-          <el-button class="filter-item" type="primary" icon="el-icon-plus" @click="addConf">
+          <el-button class="filter-item" type="primary" icon="el-icon-plus" @click="addConf" v-if="this.bp && this.bp.includes('system/config_add')">
             新增
           </el-button>
         </div>
@@ -89,7 +89,11 @@
               {{
                 config_type.filter((item)=> {
                   return  row.type_id === item.id
+                }).length > 0
+              ? config_type.filter((item)=> {
+                  return  row.type_id === item.id
                 })[0].name
+              : '-'
 
               }}
             </span>
@@ -276,9 +280,9 @@
                 id:'',
                 Rules: {
                   option_name: [{ required: true, message: '请输入配置名称', trigger: 'blur' },
-                    { min: 2, max: 10, message: '长度在 2 到 10 个字符', trigger: 'blur' }],
+                    { min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }],
                   option_code: [{ required: true, message: '请输入配置code', trigger: 'blur' },
-                    { min: 2, max: 10, message: '长度在 2 到 10 个字符', trigger: 'blur' }],
+                    { min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }],
                   units:[{ required: true, message: '请填写单位', trigger: 'blur' }],
                   value:[{ required: true, message: '请填写值', trigger: 'blur' }],
                   type_id: [{ required: true, message: '请选择配置类型', trigger: 'change' }],
@@ -377,6 +381,7 @@
                           type:'success',
                           center:true
                         });
+                        this.dialogVisible = false
                         this.getList()
                       }else{
                         this.$message({
@@ -400,6 +405,10 @@
             },
 
             editConf(row) {
+              if (!this.bp.includes('system/config_edit')) {
+                this.msgTip('您暂无权限','error')
+                return
+              }
               this.id = row.id
               this.title = '编辑配置'
               this.conf.option_name = row.option_name
@@ -427,6 +436,9 @@
               this.conf.value_type = ''
               this.conf.value = ''
               this.dialogVisible = true
+              this.$nextTick(()=>{
+                this.$refs.conf.clearValidate();
+              });
             },
 
             getList (obj){
