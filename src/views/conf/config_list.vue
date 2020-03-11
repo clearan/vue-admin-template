@@ -22,7 +22,7 @@
           <el-button  class="filter-item" type="primary" style="margin-left: 20px;" icon="el-icon-search" @click="handleFilter" :loading="search_loading">
             搜索
           </el-button>
-          <el-button class="filter-item" type="primary" icon="el-icon-plus" @click="addConf" v-if="this.bp && this.bp.includes('system/config_add')">
+          <el-button class="filter-item" type="primary" icon="el-icon-plus" @click="addConf" v-if="this.bp && this.bp.includes('conf/config_add')">
             新增
           </el-button>
         </div>
@@ -405,7 +405,7 @@
             },
 
             editConf(row) {
-              if (!this.bp.includes('system/config_edit')) {
+              if (!this.bp.includes('conf/config_edit')) {
                 this.msgTip('您暂无权限','error')
                 return
               }

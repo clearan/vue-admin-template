@@ -374,7 +374,7 @@
         components: { Pagination },
         data() {
             return {
-                activeName:'five',
+                activeName:'first',
                 remark:'',
                 imageUrl: '',
                 image: '',
@@ -411,11 +411,9 @@
         computed:{
 
           states() {
-            let res= this.$store.state.user.config['user_action_status'].map(item=>{
-              let obj = {val:item.value,name:item.name}
-              return obj
+            return this.$store.state.user.config['user_action_status'].map(item=>{
+              return {val:item.value,name:item.name}
             })
-            return res
           },
 
 

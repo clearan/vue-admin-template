@@ -11,7 +11,7 @@
     <div class="app-container">
 
       <div class="filter-container">
-        <el-button   type="primary" icon="el-icon-plus" style="margin-bottom: 15px" @click="addConf" v-if="this.bp.includes('system/configType_add')">
+        <el-button   type="primary" icon="el-icon-plus" style="margin-bottom: 15px" @click="addConf" v-if="this.bp.includes('conf/configType_add')">
           新增
         </el-button>
       </div>
@@ -132,12 +132,12 @@
     methods:{
 
       confDetail(row) {
-        this.$router.push({path: '/system/configType_detail', query: {id: row.id}})
+        this.$router.push({path: '/conf/configType_detail', query: {id: row.id}})
       },
 
       editConf(row) {
 
-        if (!this.bp.includes('system/configType_edit')) {
+        if (!this.bp.includes('conf/configType_edit')) {
           this.msgTip('您没有此权限')
           return
         }

@@ -21,8 +21,6 @@
         :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
         :header-cell-style="headerStyle"
       >
-
-
         <el-table-column
           min-width="20%"
           prop="name"
@@ -41,13 +39,9 @@
         <el-table-column
           prop="路由"
           label="路由"
-          align="center"
           min-width="20%">
           <template slot-scope="{row}">
-            <template v-if="row.edit">
-              <el-input v-model="row.permission_code" class="edit-input" size="small" />
-            </template>
-            <span v-else>{{ row.permission_code }}</span>
+            <span>{{ row.permission_code }}</span>
           </template>
         </el-table-column>
 
@@ -57,7 +51,7 @@
           align="center"
           min-width="20%">
           <template slot-scope="{row}">
-            <span>{{ row.request_param }}</span>
+            {{ row.request_param }}
           </template>
         </el-table-column>
 
@@ -79,10 +73,7 @@
           align="center"
           min-width="20%">
           <template slot-scope="{row}">
-            <template v-if="row.edit">
-              <el-input v-model="row.permission_path" class="edit-input" size="small" />
-            </template>
-            <span v-else>{{ row.permission_path }}</span>
+           {{ row.permission_path }}
           </template>
         </el-table-column>
 
@@ -96,29 +87,11 @@
           </template>
         </el-table-column>
 
-<!--        <el-table-column-->
-<!--          prop="status"-->
-<!--          label="状态"-->
-<!--          align="center"-->
-<!--          min-width="20%">-->
-<!--          <template slot-scope="{row}">-->
-<!--            &lt;!&ndash;编辑状态下不可改变状态&ndash;&gt;-->
-<!--            <el-switch-->
-<!--              :disabled=row.edit-->
-<!--              v-model="row.status"-->
-<!--              @change="changeStatus(row)"-->
-<!--            >-->
-<!--            </el-switch>-->
-<!--          </template>-->
-
-<!--        </el-table-column>-->
-
         <el-table-column
           label="操作"
           min-width="20%"
           align="center"
         >
-
           <template slot-scope="{row}">
             <el-link
               type="primary"
@@ -127,21 +100,13 @@
             >
               编辑
             </el-link>
-<!--            <el-button-->
-<!--              type="danger"-->
-<!--              size="small"-->
-<!--              @click="deleteRow(row)"-->
-<!--            >-->
-<!--              删除-->
-<!--            </el-button>-->
-
           </template>
         </el-table-column>
       </el-table>
 
       <el-dialog :visible.sync="dialogVisible" title="新增权限" :close-on-click-modal="false" :close-on-press-escape="false">
         <el-form :model="auth" label-width="80px" ref="auth" :rules="onePerRules" label-position="left">
-          <el-form-item label="父级菜单">
+          <el-form-item label="父级菜单" prop="value">
             <el-select v-model="auth.value" placeholder="请选择">
               <el-option
                 v-for="item in f_menu"
@@ -183,7 +148,7 @@
 <!--            <el-input v-model="auth.permission_path" placeholder="请输入前端模板"/>-->
           </el-form-item>
 
-          <el-form-item label="请求方式">
+          <el-form-item label="请求方式" prop="req">
             <el-select v-model="auth.req" placeholder="请选择">
               <el-option
                 v-for="item in request_param"
@@ -195,7 +160,7 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item label="排序">
+          <el-form-item label="排序" prop="sort">
             <el-input v-model="auth.sort" placeholder="请输入序号"/>
           </el-form-item>
 
@@ -222,7 +187,7 @@
       </el-dialog>
       <el-dialog :visible.sync="dialogVisibleEdit" title="编辑权限" :close-on-click-modal="false" :close-on-press-escape="false">
         <el-form :model="edit" label-width="80px" ref="edit" :rules="twoPerRules" label-position="left">
-          <el-form-item label="父级菜单">
+          <el-form-item label="父级菜单" prop="value">
             <el-select v-model="edit.value" placeholder="请选择">
               <el-option
                 v-for="item in f_menu"
@@ -264,7 +229,7 @@
 <!--            <el-input v-model="edit.permission_path" placeholder="请输入模板"/>-->
           </el-form-item>
 
-          <el-form-item label="请求方式">
+          <el-form-item label="请求方式" prop="req">
             <el-select v-model="edit.req" placeholder="请选择">
               <el-option
                 v-for="item in request_param"
@@ -276,7 +241,7 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item label="排序">
+          <el-form-item label="排序" prop="sort">
             <el-input v-model="edit.sort" placeholder="请输入序号" maxLength="16"/>
           </el-form-item>
 
@@ -311,43 +276,9 @@
   import {LocalStorage} from '@/utils/storage'
   import qs from 'qs'
   import {main_url} from '@/utils/url'
-  import { Message} from 'element-ui'
-
   export default {
     name:'List',
     data() {
-      var validatePermissionName = (rule, value, callback) => {
-
-        if (value.replace(/\s/g,"") === '') {
-
-          callback(new Error('菜单名称不能为空'));
-
-        } else if (value.includes(';') || value.includes('|')) {
-
-          callback(new Error('菜单名称不能有特殊字符'));
-
-        } else {
-
-          callback();
-        }
-
-      };
-      var validatePermissionCode = (rule, value, callback) => {
-
-        if (value.replace(/\s/g,"") === '') {
-
-          callback(new Error('路由名称不能为空'));
-
-        } else if (value.includes(';') || value.includes('|')) {
-
-          callback(new Error('路由名称不能有特殊字符'));
-
-        } else {
-
-          callback();
-        }
-
-      };
       var oneValidUrl = (rule, value, callback) => {
         //url必须是配置里面有的
         var res = this.main_url.some((item) => {
@@ -402,14 +333,24 @@
         tableData: [],
         f_menu:[],
         onePerRules: {
-          permission_name: [{ required: true, trigger: 'blur', validator: validatePermissionName}],
-          permission_code: [{ required: true, trigger: 'blur', validator: validatePermissionCode}],
+          value: [{ required: true, message: '请选择父级菜单', trigger: 'change' }],
+          permission_name: [{ required: true, trigger: 'blur', message:'请输入权限名称'},
+            { min: 2, max: 10, message: '长度在 2 到 10 个字符', trigger: 'blur' }],
+          permission_code: [{ required: true, trigger: 'blur', message:'请输入路由'},
+            { min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }],
           permission_path:[{ required: true,trigger: 'change', validator: oneValidUrl}],
+          req: [{ required: true, message: '请选择请求方式', trigger: 'change' }],
+          sort: [{ required: true, message: '请输入排序', trigger: 'blur' }],
         },
         twoPerRules: {
-          permission_name: [{ required: true, trigger: 'blur', validator: validatePermissionName}],
-          permission_code: [{ required: true, trigger: 'blur', validator: validatePermissionCode}],
+          value: [{ required: true, message: '请选择父级菜单', trigger: 'change' }],
+          permission_name: [{ required: true, trigger: 'blur', message:'请输入权限名称'},
+            { min: 2, max: 10, message: '长度在 2 到 10 个字符', trigger: 'blur' }],
+          permission_code: [{ required: true, trigger: 'blur', message:'请输入路由'},
+            { min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }],
           permission_path:[{ required: true,trigger: 'change', validator: oneValidUrl}],
+          req: [{ required: true, message: '请选择请求方式', trigger: 'change' }],
+          sort: [{ required: true, message: '请输入排序', trigger: 'blur' }],
         },
 
       }
@@ -507,14 +448,6 @@
         this.$nextTick(()=>{
           this.$refs.auth.resetFields();
         });
-        this.auth.value = ''
-        this.auth.type = '1'
-        this.auth.sort = ''
-        this.auth.status = '1'
-        this.auth.req = ''
-        this.auth.permission_name = ''
-        this.auth.permission_code = ''
-        this.auth.permission_path = ''
       },
 
       submitAdd() {
@@ -780,37 +713,46 @@
           let cloneData = JSON.parse(JSON.stringify(res))    // 对源数据深度克隆
           let treeData =  cloneData.filter(father=>{
             let branchArr = cloneData.filter(child=>father.id === child.parent_id)    //返回每一项的子级数组
-            branchArr.length>0 ? father.auth2_list = branchArr : ''   //如果存在子级，则给父级添加一个children属性，并赋值
+            branchArr.length>0 ? father.children = branchArr : ''   //如果存在子级，则给父级添加一个children属性，并赋值
             return father.parent_id === 1;      //返回第一层
           });
-          // console.log(treeData)
-          var newData = [],obj = {};
+          //console.log(treeData)
+          // var newData = [],obj = {};
+          //
+          // for (var i=0;i<treeData.length;i++) {
+          //
+          //   obj = treeData[i];
+          //   obj['id'] = 'p'+obj['id'];
+          //
+          //   if (treeData[i]['auth2_list'] !== undefined) {
+          //
+          //     obj['children'] = treeData[i]['auth2_list'];
+          //     delete obj['auth2_list'];
+          //
+          //     for (var j=0;j<obj['children'].length;j++) {
+          //       obj['children'][j]['id'] = 'c'+obj['children'][j]['id'];
+          //       obj['children'][j]['edit'] = false;
+          //       obj['children'][j]['status'] = obj['children'][j]['status'] === 1;
+          //     }
+          //   }
+          //
+          //   newData.push(obj)
+          // }
 
-          for (var i=0;i<treeData.length;i++) {
-
-            obj = treeData[i];
-            obj['edit'] = false;
-            obj['status'] = obj['status'] === 1 ;
-            obj['f'] = true;
-            // obj['url'] = obj['url'] === 'javascript:void(0);' ? '' : obj['url'];
-            obj['id'] = 'p'+obj['id'];
-
-            if (treeData[i]['auth2_list'] !== undefined) {
-
-              obj['children'] = treeData[i]['auth2_list'];
-              delete obj['auth2_list'];
-
-              for (var j=0;j<obj['children'].length;j++) {
-                obj['children'][j]['id'] = 'c'+obj['children'][j]['id'];
-                obj['children'][j]['edit'] = false;
-                obj['children'][j]['status'] = obj['children'][j]['status'] === 1;
-              }
+          this.tableData = treeData.map(item => {
+            let obj = JSON.parse(JSON.stringify(item))
+            if (obj.children !== undefined) {
+              obj.children.forEach(ii=>{
+                ii.id = 'c'+ii.id
+                ii.status = ii.status === 1
+              })
             }
-
-            newData.push(obj)
-          }
-          //console.log(newData)
-          this.tableData = newData;
+            obj.id = 'p'+obj.id
+            obj.status = obj.status === 1
+            return obj
+          })
+          //this.tableData = newData;
+          //console.log(this.tableData)
         } else {
           this.$message({
             message:resp.msg,

@@ -136,15 +136,6 @@
                           center: true
                       })
                   }
-              }).catch((error)=>{
-                  if (error !== 'loginErr') {
-                      console.log(error);
-                      _this.$message({
-                          message:'系统繁忙，请稍后重试',
-                          type:'error',
-                          center:true
-                      })
-                  }
               })
             }
         },
@@ -170,15 +161,6 @@
                 }else {
                     _this.$message({
                         message:resp.ret_msg,
-                        type:'error',
-                        center:true
-                    })
-                }
-            }).catch((error)=>{
-                if (error !== 'loginErr') {
-                    console.log(error);
-                    _this.$message({
-                        message:'系统繁忙，请稍后重试',
                         type:'error',
                         center:true
                     })
@@ -214,13 +196,6 @@
 
                 this.msgTip(resp.msg,'error')
               }
-            }).catch((error)=>{
-
-              if (error !== 'loginErr') {
-                console.log(error);
-                this.msgTip('系统繁忙，请稍后重试','error')
-              }
-
             })
         }
     }

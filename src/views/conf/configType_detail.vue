@@ -10,7 +10,7 @@
     <div class="app-container">
 
       <div class="filter-container">
-        <el-button   type="primary" icon="el-icon-edit" style="margin-bottom: 15px" @click="editConf" v-if="!flag_btn">
+        <el-button   type="primary" icon="el-icon-edit" style="margin-bottom: 15px" @click="editConf" v-if="!flag_btn && this.bp.includes('conf/configType_allEdit')">
           编辑
         </el-button>
 
@@ -106,6 +106,7 @@
   export default {
       data() {
           return {
+              bp:LocalStorage.get('bp'),
               flag_btn:false,
               submit_loading:false,
               system_list:[],

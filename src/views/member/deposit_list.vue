@@ -142,6 +142,7 @@
           align="center"
           prop="created_at"
           label="创建时间"
+          width="155"
         >
           <template slot-scope="{row}">
             {{row.created_at}}

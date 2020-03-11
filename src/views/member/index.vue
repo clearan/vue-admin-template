@@ -43,7 +43,10 @@
           label="会员编号"
         >
           <template slot-scope="{row}">
-            {{ row.id }}
+            <el-link
+              type="primary"
+              size="medium"
+              @click="user_edit">{{ row.id }}</el-link>
           </template>
         </el-table-column>
 
@@ -199,14 +202,14 @@
       </el-table>
 
       <el-dialog :visible.sync="dialogVisibleEdit" title="更新会员信息" :close-on-click-modal="false" :close-on-press-escape="false">
-        <el-form :model="edit" label-width="80px" ref="edit" :rules="editRules" label-position="left">
+        <el-form :model="edit" label-width="80px" ref="edit"  label-position="left">
 
           <el-form-item label="真实姓名" prop="real_name">
-            <el-input v-model="edit.real_name" placeholder="请输入真实姓名"/>
+            <el-input v-model="edit.real_name"  readonly/>
           </el-form-item>
 
           <el-form-item label="用户昵称" prop="nick_name">
-            <el-input v-model="edit.nick_name" placeholder="请输入用户昵称"/>
+            <el-input v-model="edit.nick_name"  readonly/>
           </el-form-item>
 
           <el-form-item label="状态">
@@ -225,7 +228,7 @@
 
       </el-dialog>
       <el-dialog :visible.sync="dialogVisibleMoney" :title="money.title" :close-on-click-modal="false" :close-on-press-escape="false">
-        <el-form label-width="80px" :model="money" ref="edit" label-position="left">
+        <el-form  label-width="80px" :model="money" ref="edit"  label-position="left">
 
           <el-form-item label="真实姓名">
             <el-input v-model="money.real_name" readonly/>
@@ -435,6 +438,7 @@
         this.$http.patch(`${this.url}/${this.money.url}`,qs.stringify(data)).then(resp => {
 
           if (resp.code === 200) {
+            this.dialogVisibleMoney = false
             this.getList()
             this.$message({
               message:'成功',

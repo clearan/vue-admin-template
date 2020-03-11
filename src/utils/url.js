@@ -8,20 +8,38 @@ var main_url = [
   {value:'system/role_list',desc:'角色列表'},
   {value:'system/role_add',desc:'添加角色'},
   {value:'system/role_edit',desc:'编辑角色'},
+  {value:'system/role_auth_maps',desc:'角色权限表'},
   {value:'system/role_auth',desc:'角色绑定权限'},
   {value:'system/user_list',desc:'用户列表'},
   {value:'system/user_add',desc:'用户列表'},
   {value:'system/user_edit',desc:'用户编辑'},
   {value:'system/log_list',desc:'日志列表'},
-  {value:'system/bank_list',desc:'银行卡列表'},
-  {value:'system/configType_list',desc:'配置类型'},
-  {value:'system/configType_add',desc:'添加配置类型'},
-  {value:'system/configType_edit',desc:'编辑配置类型'},
-  {value:'system/configType_detail',desc:'配置类型分类详情'},
-  {value:'system/configType_allEdit',desc:'配置类型批量编辑'},
-  {value:'system/config_list',desc:'配置列表'},
-  {value:'system/config_add',desc:'添加配置'},
-  {value:'system/config_edit',desc:'编辑配置'},
+
+  {value:'conf',desc:'配置管理'},
+  {value:'conf/index',desc:'配置类型'},
+  {value:'conf/configType_add',desc:'添加配置类型'},
+  {value:'conf/configType_edit',desc:'编辑配置类型'},
+  {value:'conf/configType_detail',desc:'配置类型分类详情'},
+  {value:'conf/configType_allEdit',desc:'配置批量编辑'},
+  {value:'conf/config_list',desc:'配置列表'},
+  {value:'conf/config_add',desc:'添加配置'},
+  {value:'conf/config_edit',desc:'编辑配置'},
+  {value:'conf/bank_list',desc:'银行卡列表'},
+
+  {value:'log',desc:'日志管理'},
+
+  // {value:'system/bank_list',desc:'银行卡列表'},
+  // {value:'system/configType_list',desc:'配置类型'},
+  // {value:'system/configType_add',desc:'添加配置类型'},
+  // {value:'system/configType_edit',desc:'编辑配置类型'},
+  // {value:'system/configType_detail',desc:'配置类型分类详情'},
+  // {value:'system/configType_allEdit',desc:'配置类型批量编辑'},
+  // {value:'system/config_list',desc:'配置列表'},
+  // {value:'system/config_add',desc:'添加配置'},
+  // {value:'system/config_edit',desc:'编辑配置'},
+
+
+
   {value:'member',desc:'会员管理'},
   //{value:'member/member_list',desc:'会员列表'},
   {value:'member/index',desc:'会员列表'},
@@ -45,10 +63,6 @@ var main_url = [
   {value:'test/test1',desc:'cc'},
 ]
 
-// [
-// {value:'service',desc:'客服管理',child:[{value:'service/index',desc:'审核列表'},{value:'service/recharge',desc:'充值列表'}]},
-//   {value:'email',desc:'邮件管理'}
-// ]
 export {main_url}
 
 // var strUrl=window.location.href;

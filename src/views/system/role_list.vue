@@ -162,7 +162,7 @@
         </el-form>
         <div style="text-align:right;">
           <el-button type="danger" @click="dialogVisible=false">取消</el-button>
-          <el-button type="primary" @click="confirmRole">确定</el-button>
+          <el-button type="primary" @click="confirmRole" v-if="this.bp.includes('system/role_auth')">确定</el-button>
         </div>
       </el-dialog>
     </div>
@@ -246,7 +246,7 @@
       },
 
       handleAuth(row) {
-        if (!this.bp.includes('system/role_auth')) {
+        if (!this.bp.includes('system/role_auth_maps')) {
           this.msgTip('您没有此权限')
           return
         }
@@ -375,22 +375,17 @@
           request_param:'POST'
         };
 
-        this.$http.put(`${this.url}/admin_role`, qs.stringify(data)).then((resp) => {
+        this.$http.put(`${this.url}/admin_role`, qs.stringify(data)).then( resp => {
           if (resp.code === 200) {
-            row.edit = false
             this.$message({
               message: resp.msg,
               type: 'success',
               center: true
             })
           } else {
-            row.edit = true;
+            row.status = !row.status
             this.msgTip(resp.msg)
           }
-        }).catch((error) => {
-          row.edit = true;
-          console.log(error);
-          this.msgTip('系统繁忙，请稍后重试')
         })
       },
 
@@ -428,9 +423,7 @@
       },
 
       confirmEdit(row) {
-
         if (this.checkRule(row)) {
-
           let data = {
             id: row.id,
             role_name: row.role_name,
@@ -438,7 +431,7 @@
             remark:row.remark,
             request_param:'PUT'
           };
-          //console.log(data);return
+
           this.$http.put(`${this.url}/admin_role`, qs.stringify(data)).then((resp) => {
             if (resp.code === 200) {
               row.edit = false
@@ -451,10 +444,6 @@
               row.edit = true;
               this.msgTip(resp.msg)
             }
-          }).catch((error) => {
-            row.edit = true;
-            console.log(error);
-            this.msgTip('系统繁忙，请稍后重试')
           })
         }
       },

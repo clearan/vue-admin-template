@@ -1,30 +1,45 @@
 <template>
-  <div class="dashboard-container">
-    aa
+
+  <div class="block">
+    <span class="demonstration">hover 触发子菜单</span>
+    <el-cascader
+      v-model="value"
+      :options="options"
+      :props="{ expandTrigger: 'hover' }"
+      @change="handleChange"></el-cascader>
   </div>
+
 </template>
 
 <script>
-  import { mapGetters } from 'vuex'
-
   export default {
-    name: 'index',
-    computed: {
-      ...mapGetters([
-        'name'
-      ])
+    data() {
+      return {
+        value: [],
+        options: [
+          {
+          value: 'zhinan',
+          label: '指南',
+        }, {
+          value: 'ziyuan',
+          label: '资源',
+          children: [{
+            value: 'axure',
+            label: 'Axure Components'
+          }, {
+            value: 'sketch',
+            label: 'Sketch Templates'
+          }, {
+            value: 'jiaohu',
+            label: '组件交互文档'
+          }]
+        }]
+      };
+    },
+    methods: {
+      handleChange(value) {
+        console.log(value);
+      }
     }
-  }
+  };
 </script>
-
-<style lang="scss" scoped>
-  .dashboard {
-    &-container {
-      margin: 30px;
-    }
-    &-text {
-      font-size: 30px;
-      line-height: 46px;
-    }
-  }
-</style>

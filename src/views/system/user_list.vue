@@ -133,13 +133,13 @@
       </el-table>
 
       <el-dialog :visible.sync="dialogVisible" title="新增用户" :close-on-click-modal="false" :close-on-press-escape="false">
-        <el-form  label-width="80px" ref="auth" label-position="left">
-          <el-form-item label="用户名称:">
+        <el-form :model="add" label-width="90px" ref="add" :rules="addRules" label-position="left">
+          <el-form-item label="用户名称:" prop="account">
             <el-input v-model="add.account" placeholder="请输入用户名" maxLength="16" />
           </el-form-item>
 
-          <el-form-item label="角色名:">
-            <el-select v-model="value" placeholder="请选择">
+          <el-form-item label="角色名:" prop="value">
+            <el-select v-model="add.value" placeholder="请选择">
               <el-option
                 v-for="item in role_arr"
                 :key="item.id"
@@ -150,7 +150,7 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item label="登录密码:">
+          <el-form-item label="登录密码:" prop="login_password">
             <el-input v-model="add.login_password" type="password"/>
           </el-form-item>
 
@@ -194,7 +194,6 @@
             return {
                 bp:LocalStorage.get('bp'),
                 pwd:'',
-                suc_show:false,
                 user_list: [],
                 listQuery: {
                     page: 1,
@@ -210,11 +209,19 @@
                 mem_name:'',
                 add:{
                   account:'',
+                  value:'',
                   login_password:'',
                   status:'1',
                 },
+                addRules:{
+                  account: [{ required: true, message: '请输入账户名称', trigger: 'blur' },
+                    { min: 6, max: 20, message: '长度在 6 到 20 个字符', trigger: 'blur' }],
+                  value: [{ required: true, message: '请选择角色', trigger: 'change' }],
+                  login_password:[{ required: true, message: '请输入密码', trigger: 'blur' },
+                    { min: 6, max: 20, message: '长度在 6 到 20 个字符', trigger: 'blur' }
+                    ],
+                },
                 role_arr:[],
-                value:'',
                 dialogVisible: false,
                 search_loading: false,
             }
@@ -239,10 +246,10 @@
             },
 
             addMem() {
-                this.suc_show = false
-                this.mem_name = '';
-                this.value = undefined;
                 this.dialogVisible = true
+                this.$nextTick(()=>{
+                  this.$refs.add.resetFields();
+                });
             },
 
             getUserDetail(row) {
@@ -336,76 +343,40 @@
                 })
             },
 
-            /**
-             * 校验用户名
-             * 字符最少1个
-             * 不允许有特殊字符（包括空格）
-             * 不允许中文
-             */
-            validName(str) {
-                if (str.length<6 || str.length>16) return false
-                for(var i=0;i<str.length;i++) {
-                    if(!/^[a-zA-Z0-9]$/.test(str[i])) {
-                        return false
-                    }
-                }
-                return true;
-            },
-
             submitAdd() {
+                this.$refs.add.validate(valid => {
+                    if (valid) {
+                      let obj  = this.role_arr.filter(item => {
+                        return this.add.value === item.id
+                      })
 
-                this.suc_show = false
-
-                if (!this.validName(this.add.account)) {
-                    this.msgTip('用户名格式错误','error')
-                    return
-                }
-
-                if (this.value ===''
-                    || this.value === null
-                    || this.value === undefined) {
-
-                    this.msgTip('请选择角色','error');
-                    return;
-                }
-
-                if (this.add.login_password.replace(/\s/g,'') ==='') {
-                      this.msgTip('请输入登录密码','error');
-                      return;
-                }
-
-                let obj  = this.role_arr.filter(item => {
-                  return this.value === item.id
-                })
-
-                let data = {
-                  role_id:obj[0].id,
-                  role_name:obj[0].name,
-                  account:this.add.account,
-                  login_password:this.add.login_password,
-                  status:parseInt(this.add.status),
-                  request_param:'POST'
-                }
-
-                this.$http.post(`${this.url}/admin`,qs.stringify(data)).then((resp)=>{
-                    if(resp.code === 200) {
-                      this.$message({
-                        message:'添加成功',
-                        type:'success',
-                        center:true
-                      });
-                      setTimeout(() => {
-                        window.location.reload()
-                      },1000)
-                    }else{
-                      this.msgTip(resp.msg,'error')
-                    }
-                }).catch((error)=>{
-                    if (error !== 'loginErr') {
-                        console.log(error);
-                        this.msgTip('系统繁忙，请稍后重试','error')
+                      let data = {
+                        role_id:obj[0].id,
+                        role_name:obj[0].name,
+                        account:this.add.account,
+                        login_password:this.add.login_password,
+                        status:parseInt(this.add.status),
+                        request_param:'POST'
+                      }
+                        this.$http.post(`${this.url}/admin`,qs.stringify(data)).then((resp)=>{
+                          if(resp.code === 200) {
+                            this.$message({
+                              message:'添加成功',
+                              type:'success',
+                              center:true
+                            });
+                            setTimeout(() => {
+                              window.location.reload()
+                            },1000)
+                          }else{
+                            this.msgTip(resp.msg,'error')
+                          }
+                        })
+                    } else {
+                      console.log('error submit!!')
                     }
                 })
+
             },
 
             msgTip(name,val) {

@@ -79,31 +79,11 @@
 
 </template>
 <script>
-    import {LocalStorage} from '@/utils/storage'
+
     import qs from 'qs'
     export default {
         name:'Add',
         data() {
-            var validateName = (rule, value, callback) => {
-                if (value.replace(/\s/g,"") === '') {
-                    callback(new Error('角色名称不能为空'));
-                }else if(value.length<2) {
-                  callback(new Error('角色名称字符数不能小于2'));
-                }else if(value.includes(';') || value.includes('|')) {
-                    callback(new Error('角色名称不能有特殊字符'));
-                }else {
-                    callback();
-                }
-            };
-            var validateDesc = (rule, value, callback) => {
-                if (value.replace(/\s/g,"") === '') {
-                    callback(new Error('描述不能为空'));
-                }else if(value.includes(';') || value.includes('|')) {
-                    callback(new Error('描述不能有特殊字符'));
-                }else {
-                    callback();
-                }
-            };
 
             return {
                 closable:false,
@@ -119,8 +99,8 @@
                     label: 'permission_name'
                 },
                 onePerRules: {
-                    Oname: [{ required: true, trigger: 'blur', validator: validateName}],
-                   // Odesc:[{ required: true, trigger: 'blur', validator: validateDesc}],
+                    Oname: [{ required: true, trigger: 'blur', message:'请输入角色名称'},
+                      { min: 2, max: 10, message: '长度在 2 到 10 个字符', trigger: 'blur' }]
                 },
                 role_id: '',
             };
@@ -257,7 +237,6 @@
                       newData.push(obj)
                     }
                     this.permit_tree = newData;
-                    console.log(newData);
                   } else {
                     this.permit_tree = [];
                   }
