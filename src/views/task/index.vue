@@ -38,6 +38,7 @@
           align="center"
           prop="id"
           label="id"
+          width="120"
         >
           <template slot-scope="{row}">
             {{ row.id }}
@@ -48,6 +49,7 @@
           align="center"
           prop="user_id"
           label="用户ID"
+          width="120"
         >
           <template slot-scope="{row}">
             {{ row.user_id }}
@@ -88,6 +90,7 @@
           align="center"
           prop="title"
           label="任务标题"
+          width="150"
         >
           <template slot-scope="{row}">
             {{row.title}}
@@ -98,6 +101,7 @@
           align="center"
           prop="title"
           label="任务描述"
+          width="120"
         >
           <template slot-scope="{row}">
             {{row.title}}
@@ -149,6 +153,7 @@
           align="center"
           prop="commit"
           label="待审核人数"
+          width="120"
         >
           <template slot-scope="{row}">
             {{row.commit}}
@@ -179,6 +184,7 @@
           align="center"
           prop="created_at"
           label="提交时间"
+          width="150"
         >
           <template slot-scope="{row}">
             {{row.created_at}}
@@ -213,6 +219,7 @@
           align="center"
           prop=""
           label="操作"
+          fixed="right"
         >
           <template slot-scope="{row}">
             <el-link

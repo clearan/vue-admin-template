@@ -22,21 +22,13 @@
         :default-sort = "{prop: 'CreatedTime', order: 'descending'}"
       >
 
-        <el-table-column
-          align="center"
-          prop="id"
-          label="id"
-        >
-          <template slot-scope="{row}">
-            {{ row.id }}
-          </template>
-        </el-table-column>
+
 
 
         <el-table-column
           align="center"
           prop="name"
-          label="name"
+          label="配置名称"
         >
           <template slot-scope="{row}">
 
@@ -73,7 +65,7 @@
 
         <el-table-column
           align="center"
-          label="操作"
+          label="配置项"
         >
           <template slot-scope="{row}">
             <el-link type="primary" @click="confDetail(row)">

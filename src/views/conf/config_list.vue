@@ -166,15 +166,15 @@
       <el-dialog :visible.sync="dialogVisible" :title="title" :close-on-click-modal="false" :close-on-press-escape="false">
         <el-form  :model="conf" label-width="100px" ref="conf" :rules="Rules" label-position="left">
           <el-form-item label="配置名称:" prop="option_name">
-            <el-input v-model="conf.option_name" placeholder="请输入配置名称" maxLength="16" />
+            <el-input v-model="conf.option_name" placeholder="请输入配置名称" maxLength="20" />
           </el-form-item>
 
           <el-form-item label="配置code:" prop="option_code">
-            <el-input v-model="conf.option_code" placeholder="请输入配置名code" maxLength="16" />
+            <el-input v-model="conf.option_code" placeholder="请输入配置名code" maxLength="30" />
           </el-form-item>
 
           <el-form-item label="描述:" >
-            <el-input v-model="conf.option_describe" placeholder="请输入描述" maxLength="16" />
+            <el-input v-model="conf.option_describe" placeholder="请输入描述" maxLength="50" />
           </el-form-item>
 
           <el-form-item label="配置类型:" prop="type_id">
@@ -213,7 +213,7 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item label="单位:" prop="units">
+          <el-form-item label="单位:">
             <el-input v-model="conf.units" />
           </el-form-item>
 
@@ -282,8 +282,8 @@
                   option_name: [{ required: true, message: '请输入配置名称', trigger: 'blur' },
                     { min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }],
                   option_code: [{ required: true, message: '请输入配置code', trigger: 'blur' },
-                    { min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }],
-                  units:[{ required: true, message: '请填写单位', trigger: 'blur' }],
+                    { min: 2, max: 30, message: '长度在 2 到 30 个字符', trigger: 'blur' }],
+                  // units:[{ required: true, message: '请填写单位', trigger: 'blur' }],
                   value:[{ required: true, message: '请填写值', trigger: 'blur' }],
                   type_id: [{ required: true, message: '请选择配置类型', trigger: 'change' }],
                   from_id: [{ required: true, message: '请选择表单类型', trigger: 'change' }],

@@ -119,7 +119,12 @@ router.beforeEach( async(to, from, next) => {
           constantRoutes.push(init)
           constantRoutes = constantRoutes.concat(arr)
           constantRoutes.push( { path: '*', redirect: '/404', hidden: true })
+          // console.log(constantRoutes)
+          // constantRoutes = constantRoutes.filter(item=>{
+          //   return item.path!=='/money'
+          // })
         }catch (error) {
+          console.log(error)
           Message.error(error || 'Has Error')
           next(`/login?redirect=${to.path}`)
           NProgress.done()

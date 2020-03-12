@@ -110,7 +110,18 @@
               type="success"
               size="small"
               @click="confirmEdit(row)">
-              Ok
+              确定
+            </el-button>
+
+            <el-button
+              v-if="row.edit"
+              class="cancel-btn"
+              size="small"
+              icon="el-icon-refresh"
+              type="warning"
+              @click="cancelSubmit(row)"
+            >
+              取消
             </el-button>
             <el-link
               v-else
@@ -422,6 +433,12 @@
         return true;
       },
 
+      cancelSubmit(row) {
+        row.edit = false
+        row.role_name = row.originRoleName
+        row.remark = row.originRemark
+      },
+
       confirmEdit(row) {
         if (this.checkRule(row)) {
           let data = {
@@ -519,6 +536,8 @@
 
                 obj = arr[i]
                 obj['edit'] = false;
+                obj['originRoleName'] = obj['role_name'];
+                obj['originRemark'] = obj['remark'];
                 obj['status'] = obj['status'] === 1;
                 newData.push(obj)
               }

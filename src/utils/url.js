@@ -27,6 +27,7 @@ var main_url = [
   {value:'conf/bank_list',desc:'银行卡列表'},
 
   {value:'log',desc:'日志管理'},
+  {value:'log/index',desc:'日志列表'},
 
   // {value:'system/bank_list',desc:'银行卡列表'},
   // {value:'system/configType_list',desc:'配置类型'},
@@ -54,8 +55,8 @@ var main_url = [
   {value:'task/subscribe_list',desc:'接单任务列表'},
   {value:'task/type_list',desc:'任务类型列表'},
   {value:'task/type_add',desc:'创建任务类型'},
-  {value:'order',desc:'订单管理'},
   {value:'money',desc:'财务管理'},
+  {value:'money/index',desc:'帐单列表'},
   {value:'report',desc:'报表管理'},
   {value:'test',desc:'测试管理'},
   {value:'test/index',desc:'aa'},

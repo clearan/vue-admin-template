@@ -163,8 +163,8 @@
           </el-form-item>
 
           <el-form-item label="状态">
-            <el-radio v-model="edit.status" label="1">正常</el-radio>
-            <el-radio v-model="edit.status" label="2">禁用</el-radio>
+            <el-radio v-model="edit.status" label="1">上架</el-radio>
+            <el-radio v-model="edit.status" label="2">下架</el-radio>
           </el-form-item>
 
           <el-form-item>

@@ -203,26 +203,20 @@
 
       modules() {
         let res= this.$store.state.user.config['site_admin_log_model'].map(item=>{
-          let obj = {module:item.value,name:item.name}
-          return obj
+          return {module:item.value,name:item.name}
         })
         res.splice(0,1)
         return res
       },
       actions() {
-        let res= this.$store.state.user.config['site_admin_log_action'].map(item=>{
-          let obj = {action:item.value,name:item.name}
-          return obj
+        return this.$store.state.user.config['site_admin_log_action'].map(item=>{
+          return {action:item.value,name:item.name}
         })
-        return res
       },
       levels() {
-        let res= this.$store.state.user.config['site_admin_log_level'].map(item=>{
-          let obj = {level:item.value,name:item.name}
-          return obj
+        return this.$store.state.user.config['site_admin_log_level'].map(item=>{
+          return {level:item.value,name:item.name}
         })
-        console.log(res)
-        return res
       },
     },
 

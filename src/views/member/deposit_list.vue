@@ -120,21 +120,13 @@
 <!--            <el-tag v-else-if="row.status===2"  size="medium">审核中</el-tag>-->
 <!--            <el-tag v-else-if="row.status===3"  size="medium">成功</el-tag>-->
 <!--            <el-tag v-else  size="medium">拒绝</el-tag>-->
+            <el-tag :type="row.status===1?'':row.status===2?'success':row.status === 3?'danger':'info'">
             {{
             states.filter(items=> {
               return items.status===row.status
             })[0].name
             }}
-          </template>
-        </el-table-column>
-
-        <el-table-column
-          align="center"
-          prop="admin_account"
-          label="操作人"
-        >
-          <template slot-scope="{row}">
-            {{row.admin_account}}
+            </el-tag>
           </template>
         </el-table-column>
 
@@ -151,36 +143,74 @@
 
         <el-table-column
           align="center"
+          prop="admin_account"
+          label="操作人"
+        >
+          <template slot-scope="{row}">
+            <span v-if="row.admin_account">{{row.admin_account}}</span>
+            <span v-else>-</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          align="center"
           prop=""
           label="操作"
         >
           <template slot-scope="{row}">
-            <el-link
-              type="primary"
-              size="medium"
-              @click="user_edit(row)"
-            >
-              编辑
-            </el-link>
+            <div v-if="row.status === 4">
+              <div v-if="row.admin_account && row.admin_account !== row.storage_name">
+                <el-tag type="warning">已锁定</el-tag>
+              </div>
+              <div v-else>
+                <div v-if="row.admin_account && row.admin_account === row.storage_name">
+                  <el-link
+                    type="primary"
+                    size="medium"
+                    @click="user_edit(row)"
+                  >
+                    审核
+                  </el-link>
+                  <el-link
+                    type="primary"
+                    size="medium"
+                    @click="lock(row)"
+                  >
+                    解锁
+                  </el-link>
+                </div>
+                <div v-else>
+                  <el-link
+                    type="primary"
+                    size="medium"
+                    @click="lock(row)"
+                  >
+                    锁定
+                  </el-link>
+                </div>
+              </div>
+            </div>
+
+            <div v-else>-</div>
           </template>
 
         </el-table-column>
 
       </el-table>
-      <el-dialog :visible.sync="dialogVisibleEdit" title="更新会员信息" :close-on-click-modal="false" :close-on-press-escape="false">
-        <el-form :model="edit" label-width="80px" ref="edit" :rules="editRules" label-position="left">
+      <el-dialog :visible.sync="dialogVisibleEdit" title="审核存款信息" :close-on-click-modal="false" :close-on-press-escape="false">
+        <el-form :model="edit" label-width="80px" ref="edit" :rules="checkRule" label-position="left">
 
-          <el-form-item label="真实姓名" prop="real_name">
-            <el-input v-model="edit.real_name" placeholder="请输入真实姓名"/>
+          <el-form-item label="用户名">
+            <el-input v-model="edit.username" readonly/>
           </el-form-item>
 
-          <el-form-item label="用户昵称" prop="nick_name">
-            <el-input v-model="edit.nick_name" placeholder="请输入用户昵称"/>
+          <el-form-item label="存款金额">
+            <el-input v-model="edit.amount" readonly/>
           </el-form-item>
 
-          <el-form-item label="状态">
-            <el-radio v-model="edit.status" label="1">正常</el-radio>
-            <el-radio v-model="edit.status" label="2">禁用</el-radio>
+          <el-form-item label="状态" prop="status">
+            <el-radio v-model="edit.status" label="2">通过</el-radio>
+            <el-radio v-model="edit.status" label="3">驳回</el-radio>
           </el-form-item>
 
           <el-form-item>
@@ -209,16 +239,8 @@
   export default {
     components: { Pagination,Timeselect},
     data() {
-      var validateName = (rule, value, callback) => {
-        if (!value) {
-          callback(new Error('名称不能为空'));
-        } else if (value.includes(';') || value.includes('|')) {
-          callback(new Error('名称不能有特殊字符'));
-        } else {
-          callback();
-        }
-      };
       return {
+        base:LocalStorage.get('base'),
         button:['','','','','','',''],
         search_loading:false,
         list:[],
@@ -232,20 +254,14 @@
           admin_account: undefined,
           status:undefined
         },
-        // states : [
-        //   {status:1,name:'提现中'},
-        //   {status:2,name:'审核中'},
-        //   {status:3,name:'成功'},
-        //   {status:4,name:'拒绝'},
-        // ],
         edit:{
-          real_name:'',
-          nick_name:'',
+          id:'',
+          username:'',
+          amount:'',
           status:''
         },
-        editRules: {
-          real_name: [{ required: true, trigger: 'blur', validator: validateName}],
-          nick_name: [{ required: true, trigger: 'blur', validator: validateName}],
+        checkRule:{
+          status: [{ required: true, message: '请确定审核结果', trigger: 'change' }],
         },
         total:0,
         dialogVisibleEdit: false,
@@ -255,11 +271,9 @@
     computed:{
 
       states() {
-        let res= this.$store.state.user.config['user_deposit_status'].map(item=>{
-          let obj = {status:item.value,name:item.name}
-          return obj
+        return this.$store.state.user.config['user_deposit_status'].map(item=>{
+          return {status:item.value,name:item.name}
         })
-        return res
       }
     },
 
@@ -320,7 +334,9 @@
             this.search_loading = false;
             if (resp.code === 200) {
               if (resp.data) {
-                this.list = resp.data;
+                this.list = resp.data.map(item => {
+                  return {...item,storage_name:this.base.account}
+                })
                 this.total = resp.page.TotalSize
               }else {
                 this.list = [];
@@ -343,18 +359,57 @@
         }
       },
       user_edit(row) {
-        console.log(row)
         this.edit.id = row.id;
-        this.edit.real_name = row.real_name;
-        this.edit.nick_name = row.nick_name;
-        this.edit.status = row.status;
+        this.edit.username = row.username;
+        this.edit.amount = row.amount;
+        this.edit.status = '';
         this.dialogVisibleEdit = true
         this.$nextTick(()=>{
-          this.$refs.edit.resetFields();//等弹窗里的form表单的dom渲染完在执行this.$refs.edit.resetFields()，去除验证
+          this.$refs.edit.clearValidate();
         });
       },
+
       submitEdit() {
+        this.$refs.edit.validate(valid => {
+          if (valid) {
+            let data = {
+              id:this.edit.id,
+              status:parseInt(this.edit.status),
+              request_param:'PUT'
+            }
+            this.$http.put(`${this.url}/user_deposit`,qs.stringify(data)).then(resp => {
+              if (resp.code === 200) {
+                this.dialogVisibleEdit = false
+                this.$message({
+                  message:'审核完成',
+                  type:'success',
+                  center:true
+                });
+                this.getList()
+              } else {
+                this.msgTip(resp.msg)
+              }
+            })
+          } else {
+            console.log('error submit!!')
+          }
+        })
       },
+
+      lock(row) {
+        let data = {
+          id:row.id,
+          request_param:'PUT'
+        }
+        this.$http.put(`${this.url}/user_deposit_lock`,qs.stringify(data)).then(resp => {
+          if (resp.code === 200) {
+            this.getList()
+          } else {
+            this.msgTip(resp.msg)
+          }
+        })
+      },
+
       msgTip(name) {
         this.$message({
           message:name,
