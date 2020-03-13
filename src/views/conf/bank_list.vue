@@ -21,7 +21,7 @@
           min-width="12%"
           align="center"
           prop="bank_code"
-          label="bank_code"
+          label="银行名简写"
         >
           <template slot-scope="{row}">
             {{ row.bank_code }}
@@ -32,7 +32,7 @@
           min-width="10%"
           align="center"
           prop="bank_name"
-          label="bank_name"
+          label="银行名称"
         >
           <template slot-scope="{row}">
             {{row.bank_name}}
@@ -43,7 +43,7 @@
           min-width="12%"
           align="center"
           prop="icon"
-          label="icon"
+          label="图标"
         >
           <template slot-scope="{row}">
             <img :src="row.icon" class="user-avatar">

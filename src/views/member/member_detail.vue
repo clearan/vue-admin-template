@@ -1,5 +1,4 @@
 <template>
-
   <div style="
     border: 1px solid #ebeef5;
     background-color: #fff;
@@ -9,258 +8,257 @@
     min-height: 798px;"
   >
     <div class="app-container">
+      <div class="filter-container">
+        <el-date-picker
+          v-model="value1"
+          type="date"
+          value-format="timestamp"
+          placeholder="选择开始日期">
+        </el-date-picker>
 
-      <el-tabs v-model="activeName" type="card" >
-        <el-tab-pane label="基础信息" name="first">
-          <el-table
-            border fit highlight-current-row
-            :data="basic"
-            style="width: 100%;margin: 20px 0">
-            <el-table-column
-              align="center"
-              label="ID"
-            >
-              <template slot-scope="{row}">
-                {{row.user_id}}
-              </template>
-            </el-table-column>
+        <span>至</span>
 
-            <el-table-column
-              align="center"
-              label="用户名"
-            >
-              <template slot-scope="{row}">
-                {{row.username}}
-              </template>
-            </el-table-column>
+        <el-date-picker
+          v-model="value2"
+          type="date"
+          value-format="timestamp"
+          placeholder="选择结束日期">
+        </el-date-picker>
 
-            <el-table-column
-              align="center"
-              label="直属上级">
-              <template slot-scope="{row}">
-                {{row.user_parent_id}}
-              </template>
-            </el-table-column>
+        <el-button  class="filter-item" type="primary" style="margin-left: 10px;margin-top: 9px" icon="el-icon-search" @click="getList" :loading="search_loading">
+          搜索
+        </el-button>
+      </div>
 
-            <el-table-column
-              align="center"
-              label="电话"
-            >
-              <template slot-scope="{row}">
-                {{row.phone}}
-              </template>
-            </el-table-column>
+      <el-table
+        :data="tableData"
+        style="width: 100%"
+        default-expand-all
+        border
+      >
+        <el-table-column type="expand">
+          <template slot-scope="props">
+            <el-form label-position="left" inline class="demo-table-expand">
+              <el-form-item label="订阅任务总量">
+                <span>{{ props.row.task_subscribe_count }}</span>
+              </el-form-item>
+              <el-form-item label="订阅任务金额">
+                <span>{{ props.row.task_subscribe_money_sum }}</span>
+              </el-form-item>
+              <el-form-item label="成功任务量">
+                <span>{{ props.row.task_subscribe_status_success_count }}</span>
+              </el-form-item>
+              <el-form-item label="失败任务量">
+                <span>{{ props.row.task_subscribe_status_failure_count }}</span>
+              </el-form-item>
+              <el-form-item label="进行中任务量">
+                <span>{{ props.row.task_subscribe_status_wait_count }}</span>
+              </el-form-item>
+              <el-form-item label="充值次数">
+                <span>{{ props.row.user_deposit_count }}</span>
+              </el-form-item>
+              <el-form-item label="充值金额">
+                <span>{{ props.row.user_deposit_money_sum }}</span>
+              </el-form-item>
+              <el-form-item label="最大充值金额">
+                <span>{{ props.row.user_deposit_money_max }}</span>
+              </el-form-item>
+              <el-form-item label="人工存款总额">
+                <span>{{ props.row.user_deposit_manual_money_sum }}</span>
+              </el-form-item>
+              <el-form-item label="人工存款笔数">
+                <span>{{ props.row.user_deposit_manual_money_count }}</span>
+              </el-form-item>
+              <el-form-item label="人工存款最大额度">
+                <span>{{ props.row.user_deposit_manual_money_max }}</span>
+              </el-form-item>
+              <el-form-item label="取款次数">
+                <span>{{ props.row.user_withdraw_count }}</span>
+              </el-form-item>
+              <el-form-item label="取款金额">
+                <span>{{ props.row.user_withdraw_money_sum }}</span>
+              </el-form-item>
+              <el-form-item label="最大取款金额">
+                <span>{{ props.row.user_withdraw_money_max }}</span>
+              </el-form-item>
+              <el-form-item label="人工扣款金额">
+                <span>{{ props.row.user_withdraw_manual_money_sum }}</span>
+              </el-form-item>
+              <el-form-item label="人工扣款笔数">
+                <span>{{ props.row.user_withdraw_manual_money_count }}</span>
+              </el-form-item>
+              <el-form-item label="人工扣款最大额度">
+                <span>{{ props.row.user_withdraw_manual_money_max }}</span>
+              </el-form-item>
 
+              <el-form-item label="发布任务限制时间">
+                <span>{{ props.row.publish_status }}</span>
+              </el-form-item>
+              <el-form-item label="接受任务限制时间">
+                <span>{{ props.row.subscribe_status }}</span>
+              </el-form-item>
+              <el-form-item label="提现限制时间">
+                <span>{{ props.row.withdraw_status }}</span>
+              </el-form-item>
+              <el-form-item label="发送消息限制时间">
+                <span>{{ props.row.message_status }}</span>
+              </el-form-item>
+              <el-form-item label="登陆限制时间">
+                <span>{{ props.row.login_status }}</span>
+              </el-form-item>
+            </el-form>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="发布任务数"
+          prop="task_publish_count">
+        </el-table-column>
+        <el-table-column
+          label="发布任务金额"
+          prop="task_publish_money_sum">
+        </el-table-column>
+        <el-table-column
+          label="做单人数"
+          prop="task_publish_accept_count">
+        </el-table-column>
+        <el-table-column
+          label="已成功人数"
+          prop="task_publish_success_accept_count">
+        </el-table-column>
+        <el-table-column
+          label="发布结束任务数"
+          prop="task_publish_end_count">
+        </el-table-column>
+        <el-table-column
+          label="发布成功任务数"
+          prop="task_publish_success_count">
+        </el-table-column>
+        <el-table-column
+          label="发布子任务数"
+          prop="task_publish_children_count">
+        </el-table-column>
+        <el-table-column
+          label="发布子任务失败数"
+          prop="task_publish_children_failure_count">
+        </el-table-column>
+        <el-table-column
+          label="发布子任务成功数"
+          prop="task_publish_children_success_count">
+        </el-table-column>
+        <el-table-column
+          label="发布子任务进行数"
+          prop="task_publish_children_wait_count">
+        </el-table-column>
+        <el-table-column
+          label="操作"
+        >
+          <el-link
+            type="primary"
+            size="medium"
+            @click="handleEdit()"
+          >
+            编辑
+          </el-link>
+        </el-table-column>
+      </el-table>
 
-            <el-table-column
-              align="center"
-              label="下级个数"
-            >
-              <template slot-scope="{row}">
-                {{row.user_childrer_count}}
-              </template>
-            </el-table-column>
+      <el-table
+        border fit highlight-current-row style="width: 100%;margin-top: 20px"
+        :data="banList"
+        row-key="Id">
+        <el-table-column
+          align="center"
+          prop="action_admin_name"
+          label="操作人"
+        >
+          <template slot-scope="{row}">
+            {{ row.action_admin_name }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          align="center"
+          prop="phone"
+          label="会员账户"
+        >
+          <template slot-scope="{row}">
+            {{row.phone}}
+          </template>
+        </el-table-column>
+        <el-table-column
+          align="center"
+          prop="image"
+          label="凭据"
+        >
+          <template slot-scope="{row}">
+            {{ row.image }}
+          </template>
+        </el-table-column>
 
-            <el-table-column
-              align="center"
-              label="登陆次数"
-            >
-              <template slot-scope="{row}">
-                {{row.login_count}}
-              </template>
-            </el-table-column>
+        <el-table-column
+          align="center"
+          prop="login_status"
+          label="登陆状态"
+        >
+          <template slot-scope="{row}">
+            {{row.login_status}}
+          </template>
+        </el-table-column>
+        <el-table-column
+          align="center"
+          prop="message_status"
+          label="发信息状态"
+        >
+          <template slot-scope="{row}">
+            {{row.message_status}}
+          </template>
+        </el-table-column>
+        <el-table-column
+          align="center"
+          prop="publish_status"
+          label="发任务状态"
+        >
+          <template slot-scope="{row}">
+            {{row.publish_status}}
+          </template>
+        </el-table-column>
+        <el-table-column
+          align="center"
+          prop="subscribe_status"
+          label="接任务状态"
+        >
+          <template slot-scope="{row}">
+            {{row.subscribe_status}}
+          </template>
+        </el-table-column>
+        <el-table-column
+          align="center"
+          prop="withdraw_status"
+          label="取款状态"
+        >
+          <template slot-scope="{row}">
+            {{row.withdraw_status}}
+          </template>
+        </el-table-column>
+        <el-table-column
+          align="center"
+          prop="remark"
+          label="备注"
+        >
+          <template slot-scope="{row}">
+            {{row.remark}}
+          </template>
+        </el-table-column>
+        <el-table-column
+          align="center"
+          prop="created_at"
+          label="操作时间"
+        >
+          <template slot-scope="{row}">
+            {{row.created_at|formatDate}}
+          </template>
+        </el-table-column>
 
-            <el-table-column
-              align="center"
-              label="注册时间"
-            >
-              <template slot-scope="{row}">
-                {{row.created_at}}
-              </template>
-            </el-table-column>
-          </el-table>
-        </el-tab-pane>
-
-        <el-tab-pane label="任务信息" name="second">
-          <el-table
-            border fit highlight-current-row
-            :data="mission"
-            style="width: 60%;margin: 20px 0">
-            <el-table-column
-              align="center"
-              width="100%"
-              type="index"
-              :index="indexMethod">
-
-            </el-table-column>
-            <el-table-column
-              align="center"
-              label="任务数"
-              min-width="10%">
-              <template slot-scope="{row}">
-                {{row.a}}
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              align="center"
-              label="任务量"
-              min-width="10%">
-              <template slot-scope="{row}">
-                {{row.b}}
-              </template>
-            </el-table-column>
-            <el-table-column
-              align="center"
-              min-width="10%"
-              label="接单数">
-              <template slot-scope="{row}">
-                {{row.c}}
-              </template>
-            </el-table-column>
-          </el-table>
-        </el-tab-pane>
-
-        <el-tab-pane label="佣金" name="third">
-          <el-table
-            border fit highlight-current-row
-            :data="money"
-            style="width: 60%;margin: 20px 0">
-            <el-table-column
-              align="center"
-              type="index"
-              width="100%"
-              :index="indexMethod2">
-            </el-table-column>
-            <el-table-column
-              align="center"
-              prop="date"
-              label="任务"
-              min-width="35%">
-              <template slot-scope="{row}">
-                {{row.a}}
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              align="center"
-              prop="name"
-              label="推广"
-              min-width="35%">
-              <template slot-scope="{row}">
-                {{row.b}}
-              </template>
-            </el-table-column>
-          </el-table>
-        </el-tab-pane>
-
-        <el-tab-pane label="钱包" name="fourth">
-          <el-table
-            border fit highlight-current-row
-            :data="bag"
-            style="width: 60%;margin: 20px 0">
-            <el-table-column
-              align="center"
-              type="index"
-              width="100%"
-              :index="indexMethod3">
-            </el-table-column>
-            <el-table-column
-              align="center"
-              prop="date"
-              label="任务钱包"
-              min-width="35%">
-              <template slot-scope="{row}">
-                {{row.a}}
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              align="center"
-              prop="name"
-              label="主钱包"
-              min-width="35%">
-              <template slot-scope="{row}">
-                {{row.b}}
-              </template>
-            </el-table-column>
-          </el-table>
-        </el-tab-pane>
-
-        <el-tab-pane label="解/封禁" name="five">
-          <el-table
-            border fit highlight-current-row
-            :data="conf"
-            style="width: 60%;margin: 20px 0">
-            <el-table-column
-              align="center"
-              prop="date"
-              label="发任务"
-              min-width="35%">
-              <template slot-scope="{row}">
-                <span v-if="row.a===1">正常</span>
-                <span v-else>{{row.a}}</span>
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              align="center"
-              label="接任务"
-              min-width="35%">
-              <template slot-scope="{row}">
-                <span v-if="row.b===1">正常</span>
-                <span v-else>{{row.b}}</span>
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              align="center"
-              label="提现"
-              min-width="35%">
-              <template slot-scope="{row}">
-                <span v-if="row.c===1">正常</span>
-                <span v-else>{{row.c}}</span>
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              align="center"
-              label="发消息"
-              min-width="35%">
-              <template slot-scope="{row}">
-                <span v-if="row.d===1">正常</span>
-                <span v-else>{{row.d}}</span>
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              align="center"
-              label="登录"
-              min-width="35%">
-              <template slot-scope="{row}">
-                {{row.e}}
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              align="center"
-              label="操作"
-              min-width="35%">
-              <template slot-scope="{row}">
-                <el-link
-                  type="primary"
-                  size="small"
-                  @click="handleEdit(row)"
-                >
-                  更多
-                </el-link>
-              </template>
-            </el-table-column>
-
-          </el-table>
-        </el-tab-pane>
-      </el-tabs>
-
+      </el-table>
       <el-dialog :visible.sync="dialogVisibleEdit" title="编辑" :close-on-click-modal="false" :close-on-press-escape="false">
         <el-form  label-width="90px" ref="edit"  label-position="left" :inline="true">
 
@@ -343,7 +341,7 @@
               :http-request="httpRequest"
               :show-file-list="false"
               :before-upload="beforeAvatarUpload"
-              >
+            >
               <img v-if="imageUrl" :src="imageUrl" class="avatar">
               <i v-else class="el-icon-plus avatar-uploader-icon"></i>
             </el-upload>
@@ -358,272 +356,258 @@
           </el-form-item>
         </el-form>
       </el-dialog>
-
     </div>
-
   </div>
+
 </template>
 
 <script>
-
-    import Pagination from '@/components/Pagination'
-    import {LocalStorage} from '@/utils/storage'
-    import {formatMoney} from '@/utils/money'
-    import qs from 'qs'
-    export default {
-        components: { Pagination },
-        data() {
-            return {
-                activeName:'first',
-                remark:'',
-                imageUrl: '',
-                image: '',
-                basic:[
-                  {user_id:'',username:'',user_parent_id:'',phone:'',user_childrer_count:'',login_count:'',created_at:''},
-                ],
-                mission:[
-                  {a:'',b:'',c:''},
-                  {a:'',b:'',c:''},
-                  {a:'',b:'',c:''},
-                ],
-                money:[
-                  {a:'',b:''}
-                ],
-                bag:[
-                  {a:'',b:''},
-                  {a:'',b:''},
-                ],
-                conf:[
-                  {a:'',b:'',c:'',d:'',e:''},
-                ],
-                select:{
-                  publish_status:'',
-                  subscribe_status:'',
-                  withdraw_status:'',
-                  message_status:'',
-                  login_status:''
-                },
-                dialogVisibleEdit:false,
-                id:undefined,
-            }
+  import {LocalStorage} from '@/utils/storage'
+  import {formatDate} from '@/utils/date'
+  export default {
+    data() {
+      return {
+        value1:'',
+        value2:'',
+        search_loading:false,
+        tableData: [],
+        select:{
+          publish_status:'',
+          subscribe_status:'',
+          withdraw_status:'',
+          message_status:'',
+          login_status:''
         },
+        dialogVisibleEdit:false,
+        id:undefined,
+        remark:'',
+        imageUrl: '',
+        image: '',
+        banList:[],
+      }
+    },
+    computed:{
+      states() {
+        return this.$store.state.user.config['user_action_status'].map(item=>{
+          return {val:item.value,name:item.name}
+        })
+      },
+    },
 
-        computed:{
+    filters:{
+      //时间戳
+      formatDate(time) {
+        return formatDate(time);
+      },
+    },
 
-          states() {
-            return this.$store.state.user.config['user_action_status'].map(item=>{
-              return {val:item.value,name:item.name}
-            })
-          },
+    methods:{
 
+      beforeAvatarUpload (file) {
 
-        },
-
-        filters:{
-
-            //金额千分化
-            formatMoney(money) {
-                return formatMoney(money)
-            }
-        },
-
-        methods:{
-
-            beforeAvatarUpload (file) {
-
-              const isJPG = file.type === 'image/jpeg' || file.type === 'image/png'
-              const isLt2M = file.size / 1024 / 1024 < 1
-              if (!isJPG) {
-                this.$message.error('上传头像图片只能是 JPG/PNG 格式!')
-              }
-              if (!isLt2M) {
-                this.$message.error('上传头像图片大小不能超过 1MB!')
-              }
-              return isJPG && isLt2M
-            },
-
-            httpRequest (data) {
-              let _this = this
-              let rd = new FileReader() // 创建文件读取对象
-              let file = data.file
-              this.image = file
-              rd.readAsDataURL(file) // 文件读取装换为base64类型
-              rd.onloadend = function (e) {
-                _this.imageUrl = this.result // this指向当前方法onloadend的作用域
-              }
-            },
-
-
-            handleEdit(row){
-              if (!LocalStorage.get('bp').includes('member/member_ban')) {
-                  this.msgTip('您没有此权限')
-                  return
-              }
-
-              this.select.login_status=''
-              this.select.message_status=''
-              this.select.publish_status=''
-              this.select.subscribe_status=''
-              this.select.withdraw_status=''
-              this.dialogVisibleEdit = true
-            },
-
-            submitEdit() {
-              let flag = false
-              for(let i in this.select) {
-                if (this.select[i] === '') {
-                  flag = true;
-                  break;
-                }
-              }
-
-              if (flag) {
-                this.msgTip('请进行下拉选择')
-                return
-              }
-
-              let data = new FormData()
-              data.append('user_id',this.id)
-              data.append('login_status',this.select.login_status)
-              data.append('message_status',this.select.message_status)
-              data.append('publish_status',this.select.publish_status)
-              data.append('subscribe_status',this.select.subscribe_status)
-              data.append('withdraw_status',this.select.withdraw_status)
-              data.append('remark',this.remark)
-              data.append('image',this.image)
-
-              this.$http.patch(`${this.url}/user`,data).then( resp => {
-                if (resp.code === 200) {
-                  this.$message({
-                    message:'成功',
-                    type:'success',
-                    center:true
-                  });
-                  setTimeout(() => {
-                    window.location.reload()
-                  },1000)
-                }else{
-                  this.msgTip(resp.msg)
-                }
-              })
-            },
-
-            indexMethod(index){
-              switch (index) {
-                case 0:
-                  return '发布';
-                case 1:
-                  return '进行中';
-                default:
-                  return '结束'
-              }
-            },
-
-            indexMethod2(index){
-              if (index ===0) return '佣金'
-            },
-
-            indexMethod3(index){
-              return index ===1 ?'提现':'收益'
-            },
-
-            getList() {
-
-                if (this.id === undefined || this.id === '') {
-                    this.msgTip('id无效');
-                    return;
-                }
-
-                let data = {
-                  user_id:this.id
-                };
-
-                this.$http.get(`${this.url}/user_info`,data).then(resp=>{
-
-                    if (resp.code === 200) {
-                      if (resp.data.length>0){
-                        this.basic[0].user_id = resp.data[0].user_id
-                        this.basic[0].username = resp.data[0].username
-                        this.basic[0].user_parent_id = resp.data[0].user_parent_id
-                        this.basic[0].phone = resp.data[0].phone
-                        this.basic[0].user_childrer_count = resp.data[0].user_childrer_count
-                        this.basic[0].login_count = resp.data[0].login_count
-                        this.basic[0].created_at = resp.data[0].created_at
-
-                        this.mission[0].a = resp.data[0].task_pub_count
-                        this.mission[0].b = resp.data[0].task_pub_childrer_count
-                        this.mission[0].c = '-'
-                        this.mission[1].a = resp.data[0].task_pub_wait_count
-                        this.mission[1].b = resp.data[0].task_pub_wait_childrer_count
-                        this.mission[1].c = resp.data[0].task_sub_wait_count
-                        this.mission[2].a = resp.data[0].task_pub_end_count
-                        this.mission[2].b = resp.data[0].task_pub_end_childrer_count
-                        this.mission[2].c = resp.data[0].task_sub_end_count
-
-                        this.money[0].a = resp.data[0].comission_task_sum
-                        this.money[0].b = resp.data[0].comission_promotion_sum
-
-                        this.bag[0].a = resp.data[0].deposit_task_sum
-                        this.bag[0].b = resp.data[0].deposit_master_sum
-                        this.bag[1].a = resp.data[0].withdraw_task_sum
-                        this.bag[1].b = resp.data[0].withdraw_master_sum
-
-                        this.conf[0].a =resp.data[0].publish_status === 1 ? '正常' :this.compute_time(resp.data[0].publish_status-resp.time,'a')
-                        this.conf[0].b =resp.data[0].subscribe_status === 1 ? '正常' :this.compute_time(resp.data[0].subscribe_status-resp.time,'b')
-                        this.conf[0].c =resp.data[0].withdraw_status === 1 ? '正常' :this.compute_time(resp.data[0].withdraw_status-resp.time,'c')
-                        this.conf[0].d =resp.data[0].message_status === 1 ? '正常' :this.compute_time(resp.data[0].message_status-resp.time,'d')
-                        this.conf[0].e =resp.data[0].login_status === 1 ? '正常' :this.compute_time(resp.data[0].login_status-resp.time,'e')
-                      }else{
-                        this.basic = []
-                      }
-
-                    } else {
-                        this.$message({
-                            message:resp.msg,
-                            type:'error',
-                            center:true
-                        })
-                    }
-                })
-            },
-
-            msgTip(name) {
-                this.$message({
-                    message:name,
-                    type:'error',
-                    center:true
-                })
-            },
-
-            compute_time(rightTime,type) {
-                setInterval(() => {
-                  if (rightTime > 0) {
-                      rightTime--
-                      if (rightTime === 1) {
-                        clearInterval(rightTime)
-                      }
-                      let dd = Math.floor(rightTime / 60 / 60 / 24);
-                      let hh = Math.floor((rightTime / 60 / 60) % 24);
-                      let mm = Math.floor((rightTime / 60) % 60);
-                      let ss = Math.floor(rightTime % 60);
-                      this.conf[0][type] = dd + "天" + hh + "时" + mm + "分" + ss + "秒"
-                  } else {
-                      this.conf[0][type] = "正常"
-                  }
-                }, 1000);
-            },
-
-        },
-
-        created() {
-            this.id = this.$route.query.id
-            this.getList()
+        const isJPG = file.type === 'image/jpeg' || file.type === 'image/png'
+        const isLt2M = file.size / 1024 / 1024 < 1
+        if (!isJPG) {
+          this.$message.error('上传头像图片只能是 JPG/PNG 格式!')
         }
-    }
+        if (!isLt2M) {
+          this.$message.error('上传头像图片大小不能超过 1MB!')
+        }
+        return isJPG && isLt2M
+      },
 
+      httpRequest (data) {
+        let _this = this
+        let rd = new FileReader() // 创建文件读取对象
+        let file = data.file
+        this.image = file
+        rd.readAsDataURL(file) // 文件读取装换为base64类型
+        rd.onloadend = function (e) {
+          _this.imageUrl = this.result // this指向当前方法onloadend的作用域
+        }
+      },
+
+      handleEdit(row){
+        if (!LocalStorage.get('bp').includes('member/member_ban')) {
+          this.msgTip('您没有此权限')
+          return
+        }
+
+        this.select.login_status=''
+        this.select.message_status=''
+        this.select.publish_status=''
+        this.select.subscribe_status=''
+        this.select.withdraw_status=''
+        this.dialogVisibleEdit = true
+      },
+
+      submitEdit() {
+        let flag = false
+        for(let i in this.select) {
+          if (this.select[i] === '') {
+            flag = true;
+            break;
+          }
+        }
+
+        if (flag) {
+          this.msgTip('请进行下拉选择')
+          return
+        }
+
+        let data = new FormData()
+        data.append('user_id',this.id)
+        data.append('login_status',this.select.login_status)
+        data.append('message_status',this.select.message_status)
+        data.append('publish_status',this.select.publish_status)
+        data.append('subscribe_status',this.select.subscribe_status)
+        data.append('withdraw_status',this.select.withdraw_status)
+        data.append('remark',this.remark)
+        data.append('image',this.image)
+
+        this.$http.patch(`${this.url}/user`,data).then( resp => {
+          if (resp.code === 200) {
+            this.$message({
+              message:'成功',
+              type:'success',
+              center:true
+            });
+            setTimeout(() => {
+              window.location.reload()
+            },1000)
+          }else{
+            this.msgTip(resp.msg)
+          }
+        })
+      },
+
+      msgTip(name) {
+        this.$message({
+          message:name,
+          type:'error',
+          center:true
+        })
+      },
+
+      compute_time(rightTime,type) {
+        setInterval(() => {
+          if (rightTime > 0) {
+            rightTime--
+            if (rightTime === 1) {
+              clearInterval(rightTime)
+            }
+            let dd = Math.floor(rightTime / 60 / 60 / 24);
+            let hh = Math.floor((rightTime / 60 / 60) % 24);
+            let mm = Math.floor((rightTime / 60) % 60);
+            let ss = Math.floor(rightTime % 60);
+            this.tableData[0][type] = dd + "天" + hh + "时" + mm + "分" + ss + "秒"
+          } else {
+            this.tableData[0][type] = "正常"
+          }
+        }, 1000);
+      },
+
+      checkTime() {
+        if(this.value1 && this.value2 && this.value1 > this.value2) {
+          this.msgTip('开始日期不能大于结束日期')
+          return false
+        }
+        return true
+      },
+
+      getList() {
+        if(this.checkTime()) {
+          let data = {
+            start_time:this.value1 ? new Date(this.value1).toLocaleDateString() :undefined,
+            end_time:this.value2 ? new Date(this.value2).toLocaleDateString() :undefined,
+            user_id:this.id
+          };
+
+          this.$http.get(`${this.url}/user_info`,data).then(resp => {
+            if (resp.code === 200) {
+              this.tableData = resp.data
+              //this.tableData[0].publish_status = 1584680900
+              this.tableData[0].publish_status = this.tableData[0].publish_status === 1 ? '正常' : this.tableData[0].publish_status === -1 ? '永久' :
+                this.compute_time(this.tableData[0].publish_status-resp.time,'publish_status')
+              this.tableData[0].subscribe_status = this.tableData[0].subscribe_status === 1 ? '正常' : this.tableData[0].subscribe_status === -1 ? '永久' :
+                this.compute_time(this.tableData[0].subscribe_status-resp.time,'subscribe_status')
+              this.tableData[0].withdraw_status = this.tableData[0].withdraw_status === 1 ? '正常' : this.tableData[0].withdraw_status === -1 ? '永久' :
+                this.compute_time(this.tableData[0].withdraw_status-resp.time,'withdraw_status')
+              this.tableData[0].message_status = this.tableData[0].message_status === 1 ? '正常' : this.tableData[0].message_status === -1 ? '永久' :
+                this.compute_time(this.tableData[0].message_status-resp.time,'message_status')
+              this.tableData[0].login_status = this.tableData[0].login_status === 1 ? '正常' : this.tableData[0].login_status === -1 ? '永久' :
+                this.compute_time(this.tableData[0].login_status-resp.time,'login_status')
+            } else {
+              this.$message({
+                message:resp.msg,
+                type:'error',
+                center:true
+              })
+            }
+          })
+        }
+      },
+
+      banCompute(val) {
+        switch (val) {
+          case -1:
+            return '永久'
+          case 1:
+            return '正常'
+          default:
+            return this.banResult(val)
+        }
+      },
+
+      banResult(val) {
+        let dd = Math.floor(val / 60 / 60 / 24);//天
+        let hh = Math.floor((val / 60 / 60) % 24);//时
+
+        if (dd) return dd+'天'
+        if (hh) return hh+'小时'
+      },
+
+      getBan() {
+        let data = {
+          user_id:this.id
+        };
+
+        this.$http.get(`${this.url}/user_action_logs`,data).then(resp => {
+          if (resp.code === 200) {
+            if (resp.data) {
+              let copyData = JSON.parse(JSON.stringify(resp.data))
+              Date.prototype.toLocaleString = function() {
+                return this.getFullYear() + "-" + (this.getMonth() + 1) + "-" + this.getDate() + " " + this.getHours() + ":" + this.getMinutes() + ":" + this.getSeconds();
+              };
+              copyData.forEach(item => {
+                //item.created_at = item.created_at ? new Date(item.created_at).toLocaleString():'-'
+                item.created_at = item.created_at ? new Date(item.created_at).getTime():'-'
+                item.login_status = this.banCompute(item.login_status)
+                item.message_status = this.banCompute(item.message_status)
+                item.publish_status = this.banCompute(item.publish_status)
+                item.subscribe_status = this.banCompute(item.subscribe_status)
+                item.withdraw_status = this.banCompute(item.withdraw_status)
+              })
+              this.banList = copyData
+            } else {
+              this.banList = []
+            }
+          } else {
+
+          }
+        })
+      }
+    },
+
+    created() {
+      this.id = this.$route.query.id
+      this.getList()
+      this.getBan()
+    }
+  }
 </script>
 
-<style >
+<style>
   .avatar-uploader .el-upload {
     border: 1px dashed #d9d9d9;
     border-radius: 6px;
@@ -647,7 +631,17 @@
     height: 178px;
     display: block;
   }
+
+  .demo-table-expand {
+    font-size: 0;
+  }
+  .demo-table-expand label {
+    width: 125px;
+    color: #99a9bf;
+  }
+  .demo-table-expand .el-form-item {
+    margin-right: 0;
+    margin-bottom: 0;
+    width: 25%;
+  }
 </style>
-
-
-

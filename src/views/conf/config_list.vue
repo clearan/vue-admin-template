@@ -31,7 +31,7 @@
 
       <el-table
         border fit highlight-current-row style="width: 100%"
-        :data="user_list"
+        :data="list"
         row-key="id"
         :default-sort = "{prop: 'regist_time', order: 'ascending'}"
       >
@@ -161,6 +161,17 @@
           </template>
         </el-table-column>
 
+        <el-table-column
+          align="center"
+          label="操作"
+        >
+          <template slot-scope="{row}">
+            <el-link type="primary" @click="delConf(row)">
+              删除
+            </el-link>
+          </template>
+        </el-table-column>
+
       </el-table>
 
       <el-dialog :visible.sync="dialogVisible" :title="title" :close-on-click-modal="false" :close-on-press-escape="false">
@@ -255,7 +266,7 @@
             return {
                 bp:LocalStorage.get('bp'),
                 type_list :[],
-                user_list: [],
+                list: [],
                 listQuery: {
                     page: 1,
                     limit: 10,
@@ -316,6 +327,43 @@
         },
 
         methods: {
+
+            delConf(row) {
+              this.$confirm('此操作将彻底删除该配置，是否继续？','提示',{
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning',
+                closeOnClickModal:false,
+                closeOnPressEscape:false,
+              }).then(() => {
+
+                let data = {
+                  id: row.id,
+                  request_param:'DELETE'
+                };
+
+                this.$http.del(`${this.url}/site_configs`,data).then((resp) => {
+
+                  if (resp.code === 200) {
+                    const index = this.list.indexOf(row)
+                    this.list.splice(index, 1)
+                    this.$message({
+                      message:'删除成功',
+                      type:'success',
+                      center:true
+                    })
+                  } else {
+                    this.msgTip(resp.msg)
+                  }
+                })
+
+              }).catch(() => {
+                this.$message({
+                  type: 'info',
+                  message: '已取消删除'
+                });
+              })
+            },
 
             handleSubmit() {
 
@@ -463,10 +511,10 @@
 
                         let res = resp.data
                         if (res) {
-                            this.user_list = res
+                            this.list = res
                             this.total = resp.page.TotalSize
                         } else {
-                            this.user_list = []
+                            this.list = []
                             this.total = 0
                         }
 

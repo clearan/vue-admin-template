@@ -29,7 +29,7 @@
 
       <el-table
         border fit highlight-current-row style="width: 100%;"
-        :data="member_list"
+        :data="list"
         row-key="Id"
         :default-sort = "{prop: 'CreatedTime', order: 'descending'}"
       >
@@ -96,7 +96,6 @@
           </template>
         </el-table-column>
 
-
         <el-table-column
           align="center"
           prop="user_name"
@@ -108,20 +107,8 @@
 
         </el-table-column>
 
-
         <el-table-column
-          align="center"
-          prop="admin_account"
-          label="操作人账号"
-        >
-          <template slot-scope="{row}">
-            {{row.admin_account}}
-          </template>
-        </el-table-column>
-
-
-        <el-table-column
-          min-width="90"
+          width="160"
           align="center"
           prop="created_at"
           label="提交时间"
@@ -130,7 +117,6 @@
             {{row.created_at}}
           </template>
         </el-table-column>
-
 
         <el-table-column
           align="center"
@@ -144,36 +130,112 @@
 
         <el-table-column
           align="center"
+          prop="reverify_ts"
+          label="复审时间"
+        >
+<!--          <template slot-scope="{row}">-->
+<!--            <span v-if="row.reverify_ts">{{row.reverify_ts}}</span>-->
+<!--            <span v-else>-</span>-->
+<!--          </template>-->
+          <template slot-scope="{row}" >
+            <span v-if="row.copy_report_ts>0 && row.status ===5">
+              <van-count-down :time="row.copy_report_ts">
+              <template v-slot="timeData">
+                <span class="item">{{ timeData.days }}天</span>
+                <span class="item">{{ timeData.hours }}时</span>
+                <span class="item">{{ timeData.minutes }}分</span>
+                <span class="item">{{ timeData.seconds }}秒</span>
+              </template>
+            </van-count-down>
+            </span>
+            <span v-else>-</span>
+          </template>
+
+        </el-table-column>
+
+        <el-table-column
+          align="center"
+          prop="status"
+          label="状态"
+        >
+          <template slot-scope="{row}">
+            <el-tag>
+              {{
+              states.filter(items=> {
+              return items.status===row.status
+              })[0].name
+              }}
+
+            </el-tag>
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          align="center"
+          prop="admin_account"
+          label="操作人账号"
+        >
+          <template slot-scope="{row}">
+            <span v-if="row.admin_account">{{row.admin_account}}</span>
+            <span v-else>-</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          align="center"
           prop=""
           label="操作"
         >
           <template slot-scope="{row}">
-            <el-link
-              type="primary"
-              size="medium"
-              @click="user_edit(row)"
-            >
-              编辑
-            </el-link>
+            <div v-if="row.status === 5">
+              <div v-if="row.admin_account && row.admin_account !== row.storage_name">
+                <el-tag type="warning">已锁定</el-tag>
+              </div>
+              <div v-else>
+                <div v-if="row.admin_account && row.admin_account === row.storage_name">
+                  <el-link
+                    type="primary"
+                    size="medium"
+                    @click="user_edit(row)"
+                  >
+                    审核
+                  </el-link>
+                  <el-link
+                    type="primary"
+                    size="medium"
+                    @click="lock(row)"
+                  >
+                    解锁
+                  </el-link>
+                </div>
+                <div v-else>
+                  <el-link
+                    type="primary"
+                    size="medium"
+                    @click="lock(row)"
+                  >
+                    锁定
+                  </el-link>
+                </div>
+              </div>
+            </div>
+
+            <div v-else>-</div>
           </template>
 
         </el-table-column>
 
       </el-table>
-      <el-dialog :visible.sync="dialogVisibleEdit" title="更新会员信息" :close-on-click-modal="false" :close-on-press-escape="false">
-        <el-form :model="edit" label-width="80px" ref="edit" :rules="editRules" label-position="left">
+      <el-dialog :visible.sync="dialogVisibleEdit" title="审核发布任务" :close-on-click-modal="false" :close-on-press-escape="false">
+        <el-form :model="edit" label-width="80px" ref="edit" :rules="checkRule" label-position="left">
 
-          <el-form-item label="真实姓名" prop="real_name">
-            <el-input v-model="edit.real_name" placeholder="请输入真实姓名"/>
+          <el-form-item label="备注">
+            <el-input v-model="edit.remark"/>
           </el-form-item>
 
-          <el-form-item label="用户昵称" prop="nick_name">
-            <el-input v-model="edit.nick_name" placeholder="请输入用户昵称"/>
-          </el-form-item>
-
-          <el-form-item label="状态">
-            <el-radio v-model="edit.status" label="1">正常</el-radio>
-            <el-radio v-model="edit.status" label="2">禁用</el-radio>
+          <el-form-item label="状态" prop="status">
+            <el-radio v-model="edit.status" label="3">通过</el-radio>
+            <el-radio v-model="edit.status" label="4">驳回</el-radio>
           </el-form-item>
 
           <el-form-item>
@@ -198,23 +260,16 @@
   import {formatDate} from '@/utils/date'
   import {formatMoney} from '@/utils/money'
   import qs from 'qs'
-  import Timeselect from '@/components/Timeselect'
+  import Timeselect  from '@/components/Timeselect'
+
   export default {
     components: { Pagination,Timeselect},
     data() {
-      var validateName = (rule, value, callback) => {
-        if (!value) {
-          callback(new Error('名称不能为空'));
-        } else if (value.includes(';') || value.includes('|')) {
-          callback(new Error('名称不能有特殊字符'));
-        } else {
-          callback();
-        }
-      };
       return {
+        base:LocalStorage.get('base'),
         button:['','','','','','',''],
         search_loading:false,
-        member_list:[],
+        list:[],
         listQuery: {
           value1:'',
           value2:'',
@@ -222,21 +277,13 @@
           limit: 10,
           status:undefined
         },
-        // states : [
-        //   {status:1,name:'进行中'},
-        //   {status:2,name:'已提交'},
-        //   {status:3,name:'已拒绝'},
-        //   {status:4,name:'重新提交'},
-        //   {status:5,name:'已结算'},
-        // ],
         edit:{
-          real_name:'',
-          nick_name:'',
+          id:'',
+          remark:'',
           status:''
         },
-        editRules: {
-          real_name: [{ required: true, trigger: 'blur', validator: validateName}],
-          nick_name: [{ required: true, trigger: 'blur', validator: validateName}],
+        checkRule:{
+          status: [{ required: true, message: '请确定审核结果', trigger: 'change' }],
         },
         total:0,
         dialogVisibleEdit: false,
@@ -246,11 +293,9 @@
     computed:{
 
       states() {
-        let res= this.$store.state.user.config['task_subscribe_status'].map(item=>{
-          let obj = {status:item.value,name:item.name}
-          return obj
+        return this.$store.state.user.config['task_subscribe_status'].map(item=>{
+          return  {status:item.value,name:item.name}
         })
-        return res
       }
     },
 
@@ -270,19 +315,17 @@
         this.listQuery.value2 = obj.value2
         this.handleFilter()
       },
+
       get_time(obj) {
         this.listQuery.value1 = obj.value1
         this.listQuery.value2 = obj.value2
       },
+
       handleFilter() {
         this.listQuery.page = 0;
         this.getList()
       },
-      showDetail(row) {
-        let date = new Date().getTime();
-        LocalStorage.set("phone", row.Phone, date + 3*60*60*1000);
-        this.$router.push({path: '/member/dynamic_detail', query: {id: row.Id}})
-      },
+
       checkTime() {
         if(this.listQuery.value1 && this.listQuery.value2 && this.listQuery.value1 > this.listQuery.value2) {
           this.msgTip('开始日期不能大于结束日期')
@@ -290,6 +333,32 @@
         }
         return true
       },
+
+      compute_time(val,time,status) {
+        if (status !== 5) {
+          return '-'
+        } else {
+          //console.log(val,time,status)
+          setInterval(() => {
+            let rightTime = val-time
+            if (rightTime > 0) {
+              rightTime--
+              if (rightTime === 1) {
+                clearInterval(rightTime)
+              }
+              let dd = Math.floor(rightTime / 60 / 60 / 24);
+              let hh = Math.floor((rightTime / 60 / 60) % 24);
+              let mm = Math.floor((rightTime / 60) % 60);
+              let ss = Math.floor(rightTime % 60);
+              // console.log(dd + "天" + hh + "时" + mm + "分" + ss + "秒")
+              return dd + "天" + hh + "时" + mm + "分" + ss + "秒"
+            } else {
+              return "-"
+            }
+          }, 1000);
+        }
+      },
+
       getList(obj) {
         if(this.checkTime()) {
           if (obj!==undefined && obj.flag !== undefined) {
@@ -308,10 +377,15 @@
             this.search_loading = false;
             if (resp.code === 200) {
               if (resp.data) {
-                this.member_list = resp.data;
+                this.list = resp.data.map(item => {
+                  // return {...item,storage_name:this.base.account,report_ts:this.compute_time(item.reverify_ts,resp.time,item.status)}
+                  //return {...item,storage_name:this.base.account,reverify_ts:1584698900,report_ts:(1584698900-resp.time)*1000}
+                  return {...item,storage_name:this.base.account,copy_report_ts:(item.report_ts-resp.time)*1000}
+                })
+                console.log(this.list)
                 this.total = resp.page.TotalSize
               }else {
-                this.member_list = [];
+                this.list = [];
                 this.total = 0
               }
             }else{
@@ -331,18 +405,54 @@
         }
       },
       user_edit(row) {
-        console.log(row)
         this.edit.id = row.id;
-        this.edit.real_name = row.real_name;
-        this.edit.nick_name = row.nick_name;
-        this.edit.status = row.status;
         this.dialogVisibleEdit = true
         this.$nextTick(()=>{
-          this.$refs.edit.resetFields();//等弹窗里的form表单的dom渲染完在执行this.$refs.edit.resetFields()，去除验证
+          this.$refs.edit.resetFields();
         });
       },
       submitEdit() {
+        this.$refs.edit.validate(valid => {
+          if (valid) {
+            let data = {
+              id:this.edit.id,
+              status:parseInt(this.edit.status),
+              remark:this.edit.remark,
+              request_param:'PUT'
+            }
+            this.$http.put(`${this.url}/task_subscribe`,qs.stringify(data)).then(resp => {
+              if (resp.code === 200) {
+                this.dialogVisibleEdit = false
+                this.$message({
+                  message:'审核完成',
+                  type:'success',
+                  center:true
+                });
+                this.getList()
+              } else {
+                this.msgTip(resp.msg)
+              }
+            })
+          } else {
+            console.log('error submit!!')
+          }
+        })
       },
+
+      lock(row) {
+        let data = {
+          id:row.id,
+          request_param:'PATCH'
+        }
+        this.$http.patch(`${this.url}/task_subscribe`,qs.stringify(data)).then(resp => {
+          if (resp.code === 200) {
+            this.getList()
+          } else {
+            this.msgTip(resp.msg)
+          }
+        })
+      },
+
       msgTip(name) {
         this.$message({
           message:name,

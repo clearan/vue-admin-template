@@ -336,19 +336,15 @@
     computed:{
 
       states() {
-        let res= this.$store.state.user.config['user_status'].map(item=>{
-          let obj = {status:item.value,name:item.name}
-          return obj
+        return this.$store.state.user.config['user_status'].map(item=>{
+          return {status:item.value,name:item.name}
         })
-        return res
       },
 
       types() {
-        let res= this.$store.state.user.config['user_wallet_type'].map(item=>{
-          let obj = {type:item.value,name:item.name}
-          return obj
+        return this.$store.state.user.config['user_wallet_type'].map(item=>{
+          return  {type:item.value,name:item.name}
         })
-        return res
       }
     },
 

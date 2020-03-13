@@ -27,7 +27,8 @@ var main_url = [
   {value:'conf/bank_list',desc:'银行卡列表'},
 
   {value:'log',desc:'日志管理'},
-  {value:'log/index',desc:'日志列表'},
+  {value:'log/index',desc:'管理员日志'},
+  {value:'log/member_log',desc:'会员日志'},
 
   // {value:'system/bank_list',desc:'银行卡列表'},
   // {value:'system/configType_list',desc:'配置类型'},

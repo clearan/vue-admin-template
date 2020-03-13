@@ -14,19 +14,21 @@ import router from './router'
 import '@/icons' // icon
 import '@/utils/global'//全局
 import '@/permission' // permission control
-import {get, post,put,patch} from '@/utils/request'
+import {get, post,put,patch,del} from '@/utils/request'
 
 //将axios封装加入到Vue 原型里 直接this.$http.get调用
 Vue.prototype.$http = {
   get,
   post,
   put,
-  patch
+  patch,
+  del
 }
 Vue.prototype.url = 'http://10.10.35.250:8199/v1'
 
 Vue.use(ElementUI)
-
+import {CountDown} from 'vant'
+Vue.use(CountDown)
 Vue.config.productionTip = false
 
 new Vue({

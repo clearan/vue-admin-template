@@ -4,8 +4,8 @@
     border: 1px solid #ebeef5;
     background-color: #fff;
     color: #303133;
-    box-shadow: 0 2px 10px 0 rgba(0,0,0,0.1);
     transition: .3s;
+    box-shadow: 0 2px 10px 0 rgba(0,0,0,0.1);
     min-height: 798px;"
   >
     <div class="app-container">
@@ -15,19 +15,14 @@
         <timeselect @getTimeResult="get_time_result" @getTime="get_time"/>
 
         <div style="margin-top:10px">
-          <el-input v-model="listQuery.username" clearable placeholder="用户名" style="width: 150px;" class="filter-item" @keyup.enter.native="handleFilter" />
 
-          <el-select v-model="listQuery.type" placeholder="账变形式" clearable style="width: 110px" class="filter-item">
-            <el-option v-for="item in types" :key="item.type" :label="item.name" :value="item.type" />
+          <el-select v-model="listQuery.module" placeholder="模型" clearable style="width: 110px;" class="filter-item">
+            <el-option v-for="item in modules" :key="item.module" :label="item.name" :value="item.module" />
           </el-select>
-          <el-select v-model="listQuery.operate" placeholder="账变类型" clearable style="width: 110px" class="filter-item">
-            <el-option v-for="item in operates" :key="item.operate" :label="item.name" :value="item.operate" />
+          <el-select v-model="listQuery.level" placeholder="等级" clearable style="width: 90px;" class="filter-item">
+            <el-option v-for="item in levels" :key="item.level" :label="item.name" :value="item.level" />
           </el-select>
-          <el-select v-model="listQuery.role" placeholder="账变方案" clearable style="width: 110px" class="filter-item">
-            <el-option v-for="item in roles" :key="item.role" :label="item.name" :value="item.role" />
-          </el-select>
-
-          <el-button  class="filter-item" type="primary" style="margin-left: 10px;" icon="el-icon-search" @click="handleFilter" :loading="search_loading">
+          <el-button  class="filter-item" type="primary"  icon="el-icon-search" @click="handleFilter" :loading="search_loading">
             搜索
           </el-button>
         </div>
@@ -42,6 +37,7 @@
       >
 
         <el-table-column
+          min-width="8%"
           align="center"
           prop="id"
           label="ID"
@@ -52,63 +48,85 @@
         </el-table-column>
 
         <el-table-column
+          min-width="8%"
           align="center"
-          prop="user_id"
-          label="用户id"
+          prop="action_user_id"
+          label="用户ID"
         >
           <template slot-scope="{row}">
-            {{ row.user_id }}
-          </template>
-
-        </el-table-column>
-
-        <el-table-column
-          align="center"
-          prop="username"
-          label="用户名"
-        >
-          <template slot-scope="{row}">
-            {{row.username}}
+            {{ row.action_user_id }}
           </template>
         </el-table-column>
 
         <el-table-column
+          min-width="10%"
           align="center"
-          prop="phone"
-          label="手机号"
+          prop="action_user_name"
+          label="用户账户"
         >
           <template slot-scope="{row}">
-            {{row.phone}}
+            <span v-if="row.action_user_name">{{row.action_user_name}}</span>
+            <span v-else>-</span>
           </template>
         </el-table-column>
 
         <el-table-column
+          min-width="12%"
           align="center"
-          prop="type"
-          label="账变形式"
+          prop="module"
+          label="模块"
         >
           <template slot-scope="{row}">
-            <el-tag :type="row.type===1?'success':'danger'">
+            <span size="medium">
               {{
-                types.filter(items=> {
-                return items.type===row.type
-                })[0].name
+              modules.filter(items=> {
+                return items.module===row.module
+              })[0].name
               }}
-            </el-tag>
-
+            </span>
           </template>
         </el-table-column>
 
         <el-table-column
+          min-width="12%"
           align="center"
-          prop="operate"
-          label="账变类型"
+          prop="title"
+          label="标题"
         >
           <template slot-scope="{row}">
-            <el-tag>
+            {{ row.title }}
+          </template>
+
+        </el-table-column>
+
+
+        <el-table-column
+          min-width="15%"
+          align="center"
+          prop="description"
+          label="描述"
+          :show-overflow-tooltip="true"
+        >
+          <template slot-scope="{row}">
+            {{row.description}}
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          min-width="10%"
+          align="center"
+          prop="level"
+          label="日志等级"
+          :show-overflow-tooltip="true"
+        >
+          <template slot-scope="{row}">
+<!--            <el-tag v-if="row.level===1"  size="medium">普通</el-tag>-->
+<!--            <el-tag v-else-if="row.level===2" type="warning" size="medium">提醒</el-tag>-->
+<!--            <el-tag v-else  type="danger" size="medium">警告</el-tag>-->
+            <el-tag :type="row.level===1?'':row.level===2?'warning':'danger'">
               {{
-              operates.filter(items=> {
-                return items.operate===row.operate
+              levels.filter(items=> {
+                return items.level===row.level
               })[0].name
               }}
             </el-tag>
@@ -116,69 +134,21 @@
         </el-table-column>
 
         <el-table-column
+          min-width="10%"
           align="center"
-          prop="role"
-          label="账变方案"
+          prop="action_user_ip"
+          label="操作者ip"
         >
           <template slot-scope="{row}">
-            <el-tag>
-              {{
-              roles.filter(items=> {
-              return items.role===row.role
-              })[0].name
-              }}
-            </el-tag>
-
+            {{row.action_user_ip}}
           </template>
         </el-table-column>
 
         <el-table-column
-          align="center"
-          prop="amount"
-          label="交易金额（元）"
-        >
-          <template slot-scope="{row}">
-            {{row.amount}}
-          </template>
-        </el-table-column>
-
-        <el-table-column
-          align="center"
-          prop="before_amount"
-          label="变动前金额（元）"
-          width="150"
-        >
-          <template slot-scope="{row}">
-            {{row.before_amount}}
-          </template>
-        </el-table-column>
-
-        <el-table-column
-          align="center"
-          prop="after_amount"
-          label="变动后金额（元）"
-          width="150"
-        >
-          <template slot-scope="{row}">
-            {{row.after_amount}}
-          </template>
-        </el-table-column>
-
-        <el-table-column
-          align="center"
-          prop="desc"
-          label="备注"
-        >
-          <template slot-scope="{row}">
-            {{row.desc}}
-          </template>
-        </el-table-column>
-
-        <el-table-column
+          min-width="13%"
           align="center"
           prop="created_at"
           label="创建时间"
-          width="160"
         >
           <template slot-scope="{row}">
             {{row.created_at}}
@@ -186,6 +156,7 @@
         </el-table-column>
 
       </el-table>
+
       <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
     </div>
 
@@ -203,6 +174,7 @@
   export default {
     components: { Pagination,Timeselect},
     data() {
+
       return {
         button:['','','','','','',''],
         search_loading:false,
@@ -210,32 +182,28 @@
         listQuery: {
           value1:'',
           value2:'',
+          module:'',
+          level:'',
           page: 1,
-          limit: 10,
-          status:undefined
+          limit: 10
         },
-        total:0,
+        total:0
       }
     },
 
     computed:{
-      types() {
-        return this.$store.state.user.config['bill_type'].map(item=>{
-          return {type:item.value,name:item.name}
+
+      modules() {
+        return this.$store.state.user.config['site_user_log_model'].map(item=>{
+          return {module:item.value,name:item.name}
         })
       },
 
-      operates() {
-        return  this.$store.state.user.config['bill_operate'].map(item=>{
-          return {operate:item.value,name:item.name}
+      levels() {
+        return this.$store.state.user.config['site_user_log_level'].map(item=>{
+          return {level:item.value,name:item.name}
         })
       },
-
-      roles() {
-        return this.$store.state.user.config['bill_role'].map(item=>{
-          return {role:item.value,name:item.name}
-        })
-      }
     },
 
     filters:{
@@ -268,12 +236,6 @@
         this.getList()
       },
 
-      showDetail(row) {
-        let date = new Date().getTime();
-        LocalStorage.set("phone", row.Phone, date + 3*60*60*1000);
-        this.$router.push({path: '/member/dynamic_detail', query: {id: row.Id}})
-      },
-
       checkTime() {
 
         if(this.listQuery.value1 && this.listQuery.value2 && this.listQuery.value1 > this.listQuery.value2) {
@@ -291,19 +253,17 @@
           }
 
           let data = {
-            username: this.listQuery.username,
-            type : this.listQuery.type!==''?this.listQuery.type:undefined,
-            operate : this.listQuery.operate!==''?this.listQuery.operate:undefined,
-            role : this.listQuery.role!==''?this.listQuery.role:undefined,
             page: this.listQuery.page,
             page_size: this.listQuery.limit,
+            module : this.listQuery.module!==''?this.listQuery.module:undefined,
+            level : this.listQuery.level!==''?this.listQuery.level:undefined,
             start_time:this.listQuery.value1?parseInt(this.listQuery.value1/1000):undefined,
             end_time:this.listQuery.value2?parseInt(this.listQuery.value2/1000+24*60*60-1):undefined,
             request_param:'GET'
           }
 
           this.search_loading = true;
-          this.$http.get(`${this.url}/bill`,data).then((resp)=>{
+          this.$http.get(`${this.url}/site_user_log`,data).then((resp)=>{
 
             this.search_loading = false;
             if (resp.code === 200) {
@@ -321,15 +281,10 @@
                 center:true
               })
             }
-          }).catch((error)=>{
-            this.search_loading = false;
-            if (error !== 'loginErr') {
-              console.log(error);
-              this.msgTip('系统繁忙，请稍后重试')
-            }
           })
         }
       },
+
 
       msgTip(name) {
         this.$message({
@@ -341,14 +296,15 @@
     },
 
     created() {
-      if(this.$route.params.mem_id) {
-        this.listQuery.id = this.$route.params.mem_id
-      }
       this.getList()
     }
   }
 
 </script>
+
+<style>
+  .el-tooltip__popper{max-width:20%}
+</style>
 
 
 

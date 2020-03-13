@@ -29,7 +29,7 @@
 
       <el-table
         border fit highlight-current-row style="width: 100%;"
-        :data="member_list"
+        :data="list"
         row-key="Id"
         :default-sort = "{prop: 'CreatedTime', order: 'descending'}"
       >
@@ -172,16 +172,6 @@
 
         <el-table-column
           align="center"
-          prop="admin_account"
-          label="操作人账号"
-        >
-          <template slot-scope="{row}">
-            {{row.admin_account}}
-          </template>
-        </el-table-column>
-
-        <el-table-column
-          align="center"
           prop="created_at"
           label="提交时间"
           width="150"
@@ -197,11 +187,6 @@
           label="状态"
         >
           <template slot-scope="{row}">
-<!--            <el-tag v-if="row.status===1" type="warning" size="medium">待发布</el-tag>-->
-<!--            <el-tag v-else-if="row.status===2" type="info" size="medium">待审核</el-tag>-->
-<!--            <el-tag v-else-if="row.status===3" type="success" size="medium">已通过</el-tag>-->
-<!--            <el-tag v-else-if="row.status===4" type="danger" size="medium">已拒绝</el-tag>-->
-<!--            <el-tag v-else type="primary" size="medium">已结束</el-tag>-->
             <el-tag :type="row.status===1?'':row.status===2?'info':row.status===3?'success':row.status===4?'danger':''">
               {{
               states.filter(items=> {
@@ -214,6 +199,16 @@
           </template>
         </el-table-column>
 
+        <el-table-column
+          align="center"
+          prop="admin_account"
+          label="操作人账号"
+        >
+          <template slot-scope="{row}">
+            <span v-if="row.admin_account">{{row.admin_account}}</span>
+            <span v-else>-</span>
+          </template>
+        </el-table-column>
 
         <el-table-column
           align="center"
@@ -222,32 +217,59 @@
           fixed="right"
         >
           <template slot-scope="{row}">
-            <el-link
-              type="primary"
-              size="medium"
-              @click="user_edit(row)"
-            >
-              编辑
-            </el-link>
+            <div v-if="row.status === 2">
+              <div v-if="row.admin_account && row.admin_account !== row.storage_name">
+                <el-tag type="warning">已锁定</el-tag>
+              </div>
+              <div v-else>
+                <div v-if="row.admin_account && row.admin_account === row.storage_name">
+                  <el-link
+                    type="primary"
+                    size="medium"
+                    @click="user_edit(row)"
+                  >
+                    审核
+                  </el-link>
+                  <el-link
+                    type="primary"
+                    size="medium"
+                    @click="lock(row)"
+                  >
+                    解锁
+                  </el-link>
+                </div>
+                <div v-else>
+                  <el-link
+                    type="primary"
+                    size="medium"
+                    @click="lock(row)"
+                  >
+                    锁定
+                  </el-link>
+                </div>
+              </div>
+            </div>
+
+            <div v-else>-</div>
           </template>
 
         </el-table-column>
 
       </el-table>
-      <el-dialog :visible.sync="dialogVisibleEdit" title="更新会员信息" :close-on-click-modal="false" :close-on-press-escape="false">
-        <el-form :model="edit" label-width="80px" ref="edit" :rules="editRules" label-position="left">
+      <el-dialog :visible.sync="dialogVisibleEdit" title="审核发布任务" :close-on-click-modal="false" :close-on-press-escape="false">
+        <el-form :model="edit" label-width="80px" ref="edit" :rules="checkRule" label-position="left">
 
-          <el-form-item label="真实姓名" prop="real_name">
-            <el-input v-model="edit.real_name" placeholder="请输入真实姓名"/>
+          <el-form-item label="费率" prop="rate">
+            <el-input v-model="edit.rate"/>
           </el-form-item>
 
-          <el-form-item label="用户昵称" prop="nick_name">
-            <el-input v-model="edit.nick_name" placeholder="请输入用户昵称"/>
+          <el-form-item label="备注">
+            <el-input v-model="edit.refuse_remark"/>
           </el-form-item>
 
-          <el-form-item label="状态">
-            <el-radio v-model="edit.status" label="1">正常</el-radio>
-            <el-radio v-model="edit.status" label="2">禁用</el-radio>
+          <el-form-item label="状态" prop="status">
+            <el-radio v-model="edit.status" label="3">通过</el-radio>
+            <el-radio v-model="edit.status" label="4">驳回</el-radio>
           </el-form-item>
 
           <el-form-item>
@@ -287,9 +309,10 @@
         }
       };
       return {
+        base:LocalStorage.get('base'),
         button:['','','','','','',''],
         search_loading:false,
-        member_list:[],
+        list:[],
         listQuery: {
           value1:'',
           value2:'',
@@ -297,22 +320,15 @@
           limit: 10,
           status:undefined
         },
-        // states : [
-        //   {status:1,name:'待发布'},
-        //   {status:2,name:'待审核'},
-        //   {status:3,name:'已通过'},
-        //   {status:4,name:'已拒绝'},
-        //   {status:5,name:'已关闭'},
-        //   {status:6,name:'已删除'},
-        // ],
         edit:{
-          real_name:'',
-          nick_name:'',
-          status:''
+          id:'',
+          status:'',
+          rate:'',
+          refuse_remark:''
         },
-        editRules: {
-          real_name: [{ required: true, trigger: 'blur', validator: validateName}],
-          nick_name: [{ required: true, trigger: 'blur', validator: validateName}],
+        checkRule:{
+          rate: [{ required: true, message: '请填写费率', trigger: 'blur' }],
+          status: [{ required: true, message: '请确定审核结果', trigger: 'change' }],
         },
         total:0,
         dialogVisibleEdit: false,
@@ -322,11 +338,9 @@
     computed:{
 
       states() {
-        let res= this.$store.state.user.config['task_publish_status'].map(item=>{
-          let obj = {status:item.value,name:item.name}
-          return obj
+        return this.$store.state.user.config['task_publish_status'].map(item=>{
+          return {status:item.value,name:item.name}
         })
-        return res
       }
     },
 
@@ -398,10 +412,12 @@
             this.search_loading = false;
             if (resp.code === 200) {
               if (resp.data) {
-                this.member_list = resp.data;
+                this.list = resp.data.map(item => {
+                  return {...item,storage_name:this.base.account}
+                })
                 this.total = resp.page.TotalSize
               }else {
-                this.member_list = [];
+                this.list = [];
                 this.total = 0
               }
             }else{
@@ -422,19 +438,54 @@
       },
 
       user_edit(row) {
-        console.log(row)
         this.edit.id = row.id;
-        this.edit.real_name = row.real_name;
-        this.edit.nick_name = row.nick_name;
-        this.edit.status = row.status;
         this.dialogVisibleEdit = true
         this.$nextTick(()=>{
-          this.$refs.edit.resetFields();//等弹窗里的form表单的dom渲染完在执行this.$refs.edit.resetFields()，去除验证
+          this.$refs.edit.clearValidate();
         });
       },
 
       submitEdit() {
+        this.$refs.edit.validate(valid => {
+          if (valid) {
+            let data = {
+              id:this.edit.id,
+              rate:parseFloat(this.edit.rate),
+              status:parseInt(this.edit.status),
+              refuse_remark:this.edit.refuse_remark,
+              request_param:'PUT'
+            }
+            this.$http.put(`${this.url}/task_publish`,qs.stringify(data)).then(resp => {
+              if (resp.code === 200) {
+                this.dialogVisibleEdit = false
+                this.$message({
+                  message:'审核完成',
+                  type:'success',
+                  center:true
+                });
+                this.getList()
+              } else {
+                this.msgTip(resp.msg)
+              }
+            })
+          } else {
+            console.log('error submit!!')
+          }
+        })
+      },
 
+      lock(row) {
+        let data = {
+          id:row.id,
+          request_param:'PATCH'
+        }
+        this.$http.patch(`${this.url}/task_publish`,qs.stringify(data)).then(resp => {
+          if (resp.code === 200) {
+            this.getList()
+          } else {
+            this.msgTip(resp.msg)
+          }
+        })
       },
 
       msgTip(name) {

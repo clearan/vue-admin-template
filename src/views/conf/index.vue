@@ -21,10 +21,6 @@
         row-key="Id"
         :default-sort = "{prop: 'CreatedTime', order: 'descending'}"
       >
-
-
-
-
         <el-table-column
           align="center"
           prop="name"
@@ -32,7 +28,7 @@
         >
           <template slot-scope="{row}">
 
-            <el-link type="primary" @click="editConf(row)">
+            <el-link type="primary" @click="confDetail(row)">
               {{ row.name }}
             </el-link>
           </template>
@@ -65,11 +61,11 @@
 
         <el-table-column
           align="center"
-          label="配置项"
+          label="操作"
         >
           <template slot-scope="{row}">
-            <el-link type="primary" @click="confDetail(row)">
-              详情
+            <el-link type="primary"  @click="editConf(row)">
+              编辑
             </el-link>
           </template>
         </el-table-column>
