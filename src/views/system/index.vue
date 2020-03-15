@@ -426,9 +426,8 @@
                   type:'success',
                   center:true
                 });
-                setTimeout(() => {
-                  window.location.reload()
-                },1000)
+                this.dialogVisibleEdit= false
+                this.getList()
 
               } else {
                 this.msgTip(resp.msg)
@@ -471,9 +470,8 @@
                   type:'success',
                   center:true
                 });
-                setTimeout(() => {
-                  window.location.reload()
-                },1000)
+                this.dialogVisibleEdit= false
+                this.getList()
 
               } else {
                 this.msgTip(resp.msg)
@@ -548,6 +546,67 @@
           message:name,
           type:'error',
           center:true
+        })
+      },
+
+      getList() {
+        this.$http.get(`${this.url}/admin_permission`).then(resp => {
+          if (resp.code === 200) {
+            let res = resp.data
+            this.f_menu = res.filter( item => {
+              return item.parent_id < 2
+            })
+
+            let cloneData = JSON.parse(JSON.stringify(res))    // 对源数据深度克隆
+            let treeData =  cloneData.filter(father=>{
+              let branchArr = cloneData.filter(child=>father.id === child.parent_id)    //返回每一项的子级数组
+              branchArr.length>0 ? father.children = branchArr : ''   //如果存在子级，则给父级添加一个children属性，并赋值
+              return father.parent_id === 1;      //返回第一层
+            });
+            //console.log(treeData)
+            // var newData = [],obj = {};
+            //
+            // for (var i=0;i<treeData.length;i++) {
+            //
+            //   obj = treeData[i];
+            //   obj['id'] = 'p'+obj['id'];
+            //
+            //   if (treeData[i]['auth2_list'] !== undefined) {
+            //
+            //     obj['children'] = treeData[i]['auth2_list'];
+            //     delete obj['auth2_list'];
+            //
+            //     for (var j=0;j<obj['children'].length;j++) {
+            //       obj['children'][j]['id'] = 'c'+obj['children'][j]['id'];
+            //       obj['children'][j]['edit'] = false;
+            //       obj['children'][j]['status'] = obj['children'][j]['status'] === 1;
+            //     }
+            //   }
+            //
+            //   newData.push(obj)
+            // }
+
+            this.tableData = treeData.map(item => {
+              let obj = JSON.parse(JSON.stringify(item))
+              if (obj.children !== undefined) {
+                obj.children.forEach(ii=>{
+                  ii.id = 'c'+ii.id
+                  ii.status = ii.status === 1
+                })
+              }
+              obj.id = 'p'+obj.id
+              obj.status = obj.status === 1
+              return obj
+            })
+            //this.tableData = newData;
+            //console.log(this.tableData)
+          } else {
+            this.$message({
+              message:resp.msg,
+              type:'error',
+              center:true
+            })
+          }
         })
       },
 
@@ -702,65 +761,7 @@
       //去掉顶级的
       //treeData.splice(0,1)
 
-      this.$http.get(`${this.url}/admin_permission`).then(resp => {
-        if (resp.code === 200) {
-          let res = resp.data
-          let f_arr = res.filter( item => {
-            return item.parent_id < 2
-          })
-          this.f_menu = f_arr
-
-          let cloneData = JSON.parse(JSON.stringify(res))    // 对源数据深度克隆
-          let treeData =  cloneData.filter(father=>{
-            let branchArr = cloneData.filter(child=>father.id === child.parent_id)    //返回每一项的子级数组
-            branchArr.length>0 ? father.children = branchArr : ''   //如果存在子级，则给父级添加一个children属性，并赋值
-            return father.parent_id === 1;      //返回第一层
-          });
-          //console.log(treeData)
-          // var newData = [],obj = {};
-          //
-          // for (var i=0;i<treeData.length;i++) {
-          //
-          //   obj = treeData[i];
-          //   obj['id'] = 'p'+obj['id'];
-          //
-          //   if (treeData[i]['auth2_list'] !== undefined) {
-          //
-          //     obj['children'] = treeData[i]['auth2_list'];
-          //     delete obj['auth2_list'];
-          //
-          //     for (var j=0;j<obj['children'].length;j++) {
-          //       obj['children'][j]['id'] = 'c'+obj['children'][j]['id'];
-          //       obj['children'][j]['edit'] = false;
-          //       obj['children'][j]['status'] = obj['children'][j]['status'] === 1;
-          //     }
-          //   }
-          //
-          //   newData.push(obj)
-          // }
-
-          this.tableData = treeData.map(item => {
-            let obj = JSON.parse(JSON.stringify(item))
-            if (obj.children !== undefined) {
-              obj.children.forEach(ii=>{
-                ii.id = 'c'+ii.id
-                ii.status = ii.status === 1
-              })
-            }
-            obj.id = 'p'+obj.id
-            obj.status = obj.status === 1
-            return obj
-          })
-          //this.tableData = newData;
-          //console.log(this.tableData)
-        } else {
-          this.$message({
-            message:resp.msg,
-            type:'error',
-            center:true
-          })
-        }
-      })
+      this.getList()
 
 
 

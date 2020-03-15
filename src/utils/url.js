@@ -58,6 +58,7 @@ var main_url = [
   {value:'task/type_add',desc:'创建任务类型'},
   {value:'money',desc:'财务管理'},
   {value:'money/index',desc:'帐单列表'},
+  {value:'money/agent_bank',desc:'代收银行卡'},
   {value:'report',desc:'报表管理'},
   {value:'test',desc:'测试管理'},
   {value:'test/index',desc:'aa'},

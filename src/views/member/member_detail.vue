@@ -472,9 +472,8 @@
               type:'success',
               center:true
             });
-            setTimeout(() => {
-              window.location.reload()
-            },1000)
+            this.dialogVisibleEdit= false
+            this.getList()
           }else{
             this.msgTip(resp.msg)
           }

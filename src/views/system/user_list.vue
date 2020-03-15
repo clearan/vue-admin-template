@@ -365,9 +365,8 @@
                               type:'success',
                               center:true
                             });
-                            setTimeout(() => {
-                              window.location.reload()
-                            },1000)
+                            this.dialogVisible= false
+                            this.getList()
                           }else{
                             this.msgTip(resp.msg,'error')
                           }

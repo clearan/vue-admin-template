@@ -246,11 +246,9 @@
       },
 
       banks() {
-        let res= this.$store.state.user.bank.map(item=>{
-          let obj = {bank_id:item.id,name:item.bank_name}
-          return obj
+        return this.$store.state.user.bank.map(item=>{
+          return {bank_id:item.id,name:item.bank_name}
         })
-        return res
       }
     },
 

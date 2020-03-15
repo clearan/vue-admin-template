@@ -390,9 +390,8 @@
                           type:'success',
                           center:true
                         });
-                        setTimeout(() => {
-                          window.location.reload()
-                        },1000)
+                        this.dialogVisible= false
+                        this.getList()
                       }else{
                         this.$message({
                           message:resp.msg,
