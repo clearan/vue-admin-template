@@ -4,7 +4,7 @@ import { Message } from 'element-ui'
 import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
 import {LocalStorage} from '@/utils/storage'
-const _import = require('./router/_import_') //获取组件的方法
+const _import = require('./router/_import_') //获取组件的方法 测试
 import Layout from '@/layout'
 import {get} from '@/utils/request'
 import Vue from 'vue'
