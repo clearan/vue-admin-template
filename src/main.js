@@ -24,7 +24,8 @@ Vue.prototype.$http = {
   patch,
   del
 }
-Vue.prototype.url = 'http://10.10.35.250:8199/v1'
+//Vue.prototype.url = 'http://10.10.35.250:8199/v1'
+Vue.prototype.url = 'http://18.163.218.80:8199/v1'
 
 Vue.use(ElementUI)
 import {CountDown} from 'vant'

@@ -107,7 +107,7 @@
       <el-dialog :visible.sync="dialogVisible" title="新增权限" :close-on-click-modal="false" :close-on-press-escape="false">
         <el-form :model="auth" label-width="80px" ref="auth" :rules="onePerRules" label-position="left">
           <el-form-item label="父级菜单" prop="value">
-            <el-select v-model="auth.value" placeholder="请选择">
+            <el-select v-model="auth.value" placeholder="请选择" @change="clearValue">
               <el-option
                 v-for="item in f_menu"
                 :key="item.id"
@@ -164,10 +164,15 @@
             <el-input v-model="auth.sort" placeholder="请输入序号"/>
           </el-form-item>
 
-          <el-form-item label="类型">
-            <el-radio v-model="auth.type" label="1">菜单</el-radio>
-            <el-radio v-model="auth.type" label="2">路由</el-radio>
-            <el-radio v-model="auth.type" label="3">按钮</el-radio>
+          <el-form-item label="类型" v-if="!auth.value" prop="type">
+            <el-radio v-model="auth.type" label="1" >菜单</el-radio>
+            <el-radio v-model="auth.type" label="2" >路由</el-radio>
+            <el-radio v-model="auth.type" label="3" >按钮</el-radio>
+          </el-form-item>
+          <el-form-item label="类型" v-else prop="type">
+            <el-radio v-model="auth.type" label="1" v-if="f_menu.filter(item=>{ return item.id === auth.value})[0].parent_id===0">菜单</el-radio>
+            <el-radio v-model="auth.type" label="2" v-if="f_menu.filter(item=>{ return item.id === auth.value})[0].parent_id===1">路由</el-radio>
+            <el-radio v-model="auth.type" label="3" v-if="f_menu.filter(item=>{ return item.id === auth.value})[0].parent_id===1">按钮</el-radio>
           </el-form-item>
 
           <el-form-item label="状态">
@@ -188,7 +193,7 @@
       <el-dialog :visible.sync="dialogVisibleEdit" title="编辑权限" :close-on-click-modal="false" :close-on-press-escape="false">
         <el-form :model="edit" label-width="80px" ref="edit" :rules="twoPerRules" label-position="left">
           <el-form-item label="父级菜单" prop="value">
-            <el-select v-model="edit.value" placeholder="请选择">
+            <el-select v-model="edit.value" placeholder="请选择" @change="clearValue2">
               <el-option
                 v-for="item in f_menu"
                 :key="item.id"
@@ -245,11 +250,12 @@
             <el-input v-model="edit.sort" placeholder="请输入序号" maxLength="16"/>
           </el-form-item>
 
-          <el-form-item label="类型">
-            <el-radio v-model="edit.type" label="1">菜单</el-radio>
-            <el-radio v-model="edit.type" label="2">路由</el-radio>
-            <el-radio v-model="edit.type" label="3">按钮</el-radio>
+          <el-form-item label="类型" prop="type" v-if="edit.value">
+            <el-radio v-model="edit.type" label="1" v-if="f_menu.filter(item=>{ return item.id === edit.value})[0].parent_id===0">菜单</el-radio>
+            <el-radio v-model="edit.type" label="2" v-if="f_menu.filter(item=>{ return item.id === edit.value})[0].parent_id===1">路由</el-radio>
+            <el-radio v-model="edit.type" label="3" v-if="f_menu.filter(item=>{ return item.id === edit.value})[0].parent_id===1">按钮</el-radio>
           </el-form-item>
+
 
           <el-form-item label="状态">
             <el-radio v-model="edit.status" label="1">显示</el-radio>
@@ -304,7 +310,7 @@
           permission_code:'',
           permission_path:'',
           value:'',
-          type:'1',
+          type:'',
           sort:'',
           status:'1',
           req:''
@@ -340,6 +346,7 @@
             { min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }],
           permission_path:[{ required: true,trigger: 'change', validator: oneValidUrl}],
           req: [{ required: true, message: '请选择请求方式', trigger: 'change' }],
+          type: [{ required: true, message: '请选择类型', trigger: 'change' }],
           sort: [{ required: true, message: '请输入排序', trigger: 'blur' }],
         },
         twoPerRules: {
@@ -350,6 +357,7 @@
             { min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }],
           permission_path:[{ required: true,trigger: 'change', validator: oneValidUrl}],
           req: [{ required: true, message: '请选择请求方式', trigger: 'change' }],
+          type: [{ required: true, message: '请选择类型', trigger: 'change' }],
           sort: [{ required: true, message: '请输入排序', trigger: 'blur' }],
         },
 
@@ -357,6 +365,14 @@
     },
 
     methods: {
+
+      clearValue() {
+        this.auth.type = ''
+      },
+
+      clearValue2() {
+        this.edit.type = ''
+      },
 
       headerStyle({row, column, rowIndex, columnIndex}) {
 
@@ -426,8 +442,11 @@
                   type:'success',
                   center:true
                 });
-                this.dialogVisibleEdit= false
-                this.getList()
+                setTimeout(() => {
+                  window.location.reload()
+                },1000)
+                // this.dialogVisibleEdit= false
+                // this.getList()
 
               } else {
                 this.msgTip(resp.msg)
@@ -450,6 +469,7 @@
       },
 
       submitAdd() {
+        console.log(this.auth.value,this.auth.type);
         let data = {
           parent_id:this.auth.value,
           permission_name:this.auth.permission_name,
@@ -470,8 +490,11 @@
                   type:'success',
                   center:true
                 });
-                this.dialogVisibleEdit= false
-                this.getList()
+                setTimeout(() => {
+                  window.location.reload()
+                },1000)
+                // this.dialogVisible= false
+                // this.getList()
 
               } else {
                 this.msgTip(resp.msg)
@@ -556,7 +579,7 @@
             this.f_menu = res.filter( item => {
               return item.parent_id < 2
             })
-
+            console.log(this.f_menu)
             let cloneData = JSON.parse(JSON.stringify(res))    // 对源数据深度克隆
             let treeData =  cloneData.filter(father=>{
               let branchArr = cloneData.filter(child=>father.id === child.parent_id)    //返回每一项的子级数组

@@ -121,7 +121,7 @@ router.beforeEach( async(to, from, next) => {
           constantRoutes.push( { path: '*', redirect: '/404', hidden: true })
           // console.log(constantRoutes)
           // constantRoutes = constantRoutes.filter(item=>{
-          //   return item.path!=='/money'
+          //   return item.path!=='/member'
           // })
         }catch (error) {
           console.log(error)

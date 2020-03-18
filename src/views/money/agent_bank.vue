@@ -70,7 +70,7 @@
           label="卡号"
         >
           <template slot-scope="{row}">
-            {{row.bank_code}}
+            {{row.bank_number}}
           </template>
         </el-table-column>
 
@@ -172,8 +172,8 @@
             <el-input v-model="handleBank.bank_number" placeholder="请填写卡号"/>
           </el-form-item>
 
-          <el-form-item label="持卡人" prop="cardholder">
-            <el-input v-model="handleBank.cardholder" placeholder="请填写持卡人"/>
+          <el-form-item label="持卡人" prop="bank_cardholder">
+            <el-input v-model="handleBank.bank_cardholder" placeholder="请填写持卡人"/>
           </el-form-item>
 
           <el-form-item label="卡户地址" prop="bank_address">
@@ -237,12 +237,13 @@
           id:'',
           bank_id:'',
           bank_number:'',
-          cardholder:'',
+          bank_cardholder:'',
           bank_address:'',
           sort:'',
           remark:'',
           status:'1',
         },
+        id:'',
         checkRule:{
           bank_id: [{ required: true, message: '请选择银行', trigger: 'change' }],
           bank_number: [{ required: true, trigger: 'blur', message:'请输入银行卡号'},
@@ -302,6 +303,7 @@
       edit_bank(row) {
         this.title = '编辑银行卡'
         this.id = row.id
+        this.handleBank.bank_id = row.bank_id
         this.handleBank.bank_number = row.bank_number
         this.handleBank.bank_cardholder = row.bank_cardholder
         this.handleBank.bank_address = row.bank_address
@@ -319,7 +321,7 @@
           let data = {
             bank_id : this.handleBank.bank_id,
             bank_number : this.handleBank.bank_number,
-            cardholder : this.handleBank.cardholder,
+            bank_cardholder : this.handleBank.bank_cardholder,
             bank_address : this.handleBank.bank_address,
             sort : this.handleBank.sort,
             remark : this.handleBank.remark,
@@ -347,9 +349,9 @@
           })
         } else {
           let data = {
-            id : this.handleBank.id,
+            id : this.id,
             bank_number : this.handleBank.bank_number,
-            cardholder : this.handleBank.cardholder,
+            bank_cardholder : this.handleBank.bank_cardholder,
             bank_address : this.handleBank.bank_address,
             sort : this.handleBank.sort,
             remark : this.handleBank.remark,

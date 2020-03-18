@@ -118,6 +118,15 @@
           </template>
         </el-table-column>
 
+        <el-table-column
+          align="center"
+          prop="title"
+          label="举报次数"
+        >
+          <template slot-scope="{row}">
+            {{row.task_report_count}}
+          </template>
+        </el-table-column>
 
         <el-table-column
           align="center"
@@ -251,6 +260,13 @@
             </div>
 
             <div v-else>-</div>
+            <el-link
+              type="primary"
+              size="medium"
+              @click="handle_proof(row)"
+            >
+              凭据
+            </el-link>
           </template>
 
         </el-table-column>
@@ -278,9 +294,33 @@
               <el-button type="primary" @click="submitEdit">确定</el-button>
             </div>
           </el-form-item>
-
         </el-form>
+      </el-dialog>
+      <el-dialog :visible.sync="dialogVisibleProof" title="凭据详情" :close-on-click-modal="false" :close-on-press-escape="false">
+        <el-table :data="proofData" border>
+          <el-table-column label="名称" width="150">
+            <template slot-scope="{row}">
+              {{row.hintText}}
+            </template>
+          </el-table-column>
+          <el-table-column label="图片" width="200">
+            <template slot-scope="{row}">
 
+              <el-image :src=row.imgUrl class="user-avatar" :preview-src-list="row.imgUrl.split()">
+              </el-image>
+            </template>
+          </el-table-column>
+          <el-table-column label="xx">
+            <template slot-scope="{row}">
+              {{row.isCanInput}}
+            </template>
+          </el-table-column>
+          <el-table-column label="描述">
+            <template slot-scope="{row}">
+              {{row.txt}}
+            </template>
+          </el-table-column>
+        </el-table>
       </el-dialog>
       <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
     </div>
@@ -313,6 +353,7 @@
         button:['','','','','','',''],
         search_loading:false,
         list:[],
+        proofData:[],
         listQuery: {
           value1:'',
           value2:'',
@@ -332,6 +373,7 @@
         },
         total:0,
         dialogVisibleEdit: false,
+        dialogVisibleProof: false,
       }
     },
 
@@ -357,6 +399,12 @@
     },
 
     methods:{
+
+      handle_proof(row) {
+        console.log(row.step)
+        this.proofData = row.step
+        this.dialogVisibleProof = true
+      },
 
       get_time_result(obj) {
         this.listQuery.value1 = obj.value1
@@ -507,5 +555,11 @@
 
 </script>
 
-
-
+<style scoped>
+  .user-avatar {
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+  }
+</style>

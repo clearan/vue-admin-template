@@ -50,12 +50,16 @@ var main_url = [
   {value:'member/deposit_list',desc:'存款列表'},
   {value:'member/withdraw_list',desc:'取款列表'},
   {value:'member/bank_list',desc:'银行卡列表'},
+
+
   {value:'task',desc:'任务管理'},
   //{value:'task/publish_list',desc:'发布任务列表'},
   {value:'task/index',desc:'发布任务列表'},
   {value:'task/subscribe_list',desc:'接单任务列表'},
   {value:'task/type_list',desc:'任务类型列表'},
   {value:'task/type_add',desc:'创建任务类型'},
+  {value:'task/report',desc:'举报列表'},
+
   {value:'money',desc:'财务管理'},
   {value:'money/index',desc:'帐单列表'},
   {value:'money/agent_bank',desc:'代收银行卡'},
