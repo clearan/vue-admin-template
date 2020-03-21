@@ -119,9 +119,9 @@ router.beforeEach( async(to, from, next) => {
           constantRoutes.push(init)
           constantRoutes = constantRoutes.concat(arr)
           constantRoutes.push( { path: '*', redirect: '/404', hidden: true })
-          // console.log(constantRoutes)
+          console.log(constantRoutes)
           // constantRoutes = constantRoutes.filter(item=>{
-          //   return item.path!=='/member'
+          //   return item.path!=="/task"
           // })
         }catch (error) {
           console.log(error)

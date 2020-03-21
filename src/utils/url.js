@@ -63,7 +63,12 @@ var main_url = [
   {value:'money',desc:'财务管理'},
   {value:'money/index',desc:'帐单列表'},
   {value:'money/agent_bank',desc:'代收银行卡'},
+
+  {value:'notice',desc:'公告管理'},
+  {value:'notice/index',desc:'公告列表'},
+
   {value:'report',desc:'报表管理'},
+  {value:'order',desc:'订单管理'},
   {value:'test',desc:'测试管理'},
   {value:'test/index',desc:'aa'},
   {value:'test/test',desc:'bb'},
